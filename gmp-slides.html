@@ -41,10 +41,10 @@
                 margin-bottom: 15px;
             }
             .reveal section > ul > li {
-              font-size: 0.55em;
+                font-size: 0.55em;
             }
             .reveal section > ul > li > ul > li {
-              font-size: 0.77em;
+                font-size: 0.77em;
             }
             .reveal ul {
                 display: block;
@@ -54,6 +54,21 @@
             /* Footnote layout */
             .reveal section.has-footnote {
                 display: block;
+            }
+            .reveal .progress {
+                height: 10px;
+            }
+            .reveal .progress span {
+                height: 100%;
+            }
+            .reveal .slide-number {
+                font-size: 0.8em;
+                padding: 6px 10px;
+                background: rgba(0, 0, 0, 0.35);
+                color: #fff;
+                border-radius: 6px;
+                right: 4em;
+                bottom: 16px;
             }
             /* Footnote styling */
             .footnote {
@@ -71,6 +86,98 @@
             .center-text {
                 text-align: center !important;
             }
+            /* Chapter break slides */
+            .reveal section.chapter {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .reveal section.chapter h2 {
+                color: #fff;
+                font-size: 2.2em;
+                margin-bottom: 0.2em;
+            }
+            .reveal section.chapter p {
+                color: rgba(255, 255, 255, 0.85) !important;
+                text-align: center !important;
+                font-size: 0.9em !important;
+                margin: 0.2em 0 0 !important;
+            }
+            /* Undim all fragments on demand */
+            .reveal.fragments-off .fragment,
+            .reveal.fragments-off .fragment.visible,
+            .reveal section.undim .fragment.visible {
+                opacity: 1 !important;
+            }
+            /* Shortcut legend */
+            .reveal .shortcut-legend {
+                position: absolute;
+                right: var(--legend-right, 6em);
+                bottom: var(--legend-bottom, 16px);
+                z-index: 30;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                font-size: 0.3em;
+                pointer-events: auto;
+            }
+            .reveal .shortcut-legend.is-hidden {
+                display: none;
+            }
+            .reveal .shortcut-item {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                padding: 2px 5px;
+                border-radius: 8px;
+                background: rgba(0, 0, 0, 0.16);
+                color: rgba(255, 255, 255, 0.6);
+                transition:
+                    color 160ms ease,
+                    background 160ms ease,
+                    border-color 160ms ease;
+                user-select: none;
+            }
+            .reveal .shortcut-item.is-on {
+                color: #fff;
+                background: rgba(0, 0, 0, 0.35);
+            }
+            .reveal .shortcut-item.is-on .shortcut-key {
+                background: rgba(0, 0, 0, 0.35);
+            }
+            .reveal .shortcut-key {
+                display: inline-block;
+                min-width: 0.9em;
+                text-align: center;
+                padding: 1px 4px;
+                border-radius: 6px;
+                background: rgba(0, 0, 0, 0.3);
+                font-weight: 600;
+                letter-spacing: 0.02em;
+            }
+            .reveal .shortcut-item::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                right: 0;
+                bottom: calc(100% + 6px);
+                padding: 6px 8px;
+                border-radius: 6px;
+                background: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                font-size: 0.95em;
+                white-space: nowrap;
+                opacity: 0;
+                transform: translateY(4px);
+                transition:
+                    opacity 160ms ease,
+                    transform 160ms ease;
+                pointer-events: none;
+            }
+            .reveal .shortcut-item:hover::after {
+                opacity: 1;
+                transform: translateY(0);
+            }
         </style>
     </head>
     <body>
@@ -78,10 +185,10 @@
             <div class="slides">
                 <!-- SLIDE 1: Title -->
                 <section>
-                    <h2>Solid-State</br>Quantum Nuclear Energy</h2>
-                    <h3>Bridging <em>Coherent QED</em> &</br>Direct Energy Extraction</h3>
+                    <h2>Solid-State<br />Quantum Nuclear Energy</h2>
+                    <h3>Bridging <em>Coherent QED</em> &<br />Direct Energy Extraction</h3>
                     <p class="center-text" style="margin-top: 50px; font-size: 0.9em">
-                        \( \mathbf{4E} \rightarrow {}^4He \)
+                        \( \mathbf{4E} \xrightarrow{\text{goes}} {}^4He \)
                     </p>
                 </section>
 
@@ -90,24 +197,36 @@
                     <h2>The Standard Energy Stack is Broken</h2>
                     <p>Humanity currently relies on outdated "APIs" to extract energy from nature:</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Chemical (Fossil Fuels):</strong> Easy to access, but low energy density and highly
                             polluting (carbon exhaust).
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Nuclear Fission:</strong> High density, but leaves behind highly toxic state
                             (radioactive waste) and risks catastrophic system crashes (meltdowns).
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Hot Nuclear Fusion:</strong> The dream (Tokamaks/Stellarators). We try to hold a
                             100-million-degree plasma star inside a magnetic bottle. It is a brute-force hardware
                             solution that is notoriously unstable.
                         </li>
                     </ul>
-                    <p>
+                    <p class="fragment fade-in-then-semi-out">
                         <strong>The Question:</strong> Is there a more elegant, software-like approach to unlocking
                         nuclear energy at <strong>room temperature</strong>?
                     </p>
+                </section>
+
+                <!-- CHAPTER: Evidence -->
+                <section
+                    class="chapter"
+                    data-transition="fade"
+                    data-background-color="#071a2b"
+                    data-background-gradient="linear-gradient(135deg, #071a2b 0%, #0b3a3a 60%, #09213a 100%)"
+                    data-slide-number="false"
+                >
+                    <h2 class="center-text">Evidence</h2>
+                    <p class="center-text">A room-temperature nuclear anomaly</p>
                 </section>
 
                 <!-- SLIDE 3: The Inciting Incident -->
@@ -119,16 +238,16 @@
                         have investigated anomalies in transition metals.
                     </p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Setup:</strong> They take standard Titanium Hydride powders \( (TiH_2)
                             \)—basically titanium metal heavily loaded with standard hydrogen gas.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Trigger:</strong> They subject it to simple thermal cycles (heating up and
                             cooling down).
                         </li>
-                        <li><strong>The Observation:</strong> The system produces <strong>Deuterium (D)</strong>.</li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out"><strong>The Observation:</strong> The system produces <strong>Deuterium (D)</strong>.</li>
+                        <li class="fragment fade-in-then-semi-out">
                             Why is this groundbreaking? It suggests the lattice is not a passive container, but an
                             <strong>active</strong> participant that <strong>orchestrates</strong> atomic bonding.
                         </li>
@@ -142,27 +261,21 @@
                 <!-- SLIDE 4: The Physics Sanity Check -->
                 <section>
                     <h2>Why This <span class="highlight">MUST</span> Be Nuclear</h2>
-                    <p>
-                        Standard science often dismisses these anomalies as "just chemical errors." Here is why that is
-                        mathematically impossible:
-                    </p>
+                    <p>Mainstream skeptics often dismiss these anomalies as "chemical errors." Here is why that is physically impossible:</p>
                     <ul>
-                        <li>
-                            <strong>The Energy Scale:</strong> Chemistry modifies electron shells, dealing in a few
-                            electron-volts (\( eV \)). Creating Deuterium releases \( \sim 1.44 \text{ MeV} \)
-                            (Mega-electron-volts). Chemistry simply lacks the "budget" to pay for this transaction.
-                        </li>
-                        <li>
-                            <strong>The Hardware Limitation:</strong> Standard Hydrogen has 1 proton. Deuterium has 1
-                            proton + 1 neutron.
-                        </li>
-                        <li>
-                            Chemistry uses the Electromagnetic Force. To turn a proton into a neutron requires the
-                            <strong>Weak Nuclear Force</strong>. Chemistry cannot alter quarks.
-                        </li>
-                        <li>
-                            <strong>Conclusion:</strong> A nuclear event is definitively happening in a <strong>low-energy</strong>,
-                            solid-state environment. (aka. <em>Cold Fusion</em>, <em>LENR</em>)
+                        <li class="fragment fade-in-then-semi-out">
+                            <strong>The Energy Scale:</strong> Chemistry rearranges outer electrons (releasing a few \( eV \)).
+                            Creating Deuterium releases \( \sim 1.44 \text{ MeV} \)—a million times more energy.</li>
+                        <li class="fragment fade-in-then-semi-out">
+                            <strong>The Hardware Limitation / Missing Ingredient:</strong> Standard Hydrogen has 1 Proton. Deuterium has 1 Proton + <strong>1 Neutron</strong>.</li>
+                        <li class="fragment fade-in-then-semi-out">
+                            <strong>The Unbreakable Rule:</strong> Chemical reactions (Electromagnetic Force) only move electrons. They cannot touch the nucleus.</li>
+                        <li class="fragment fade-in-then-semi-out">
+                            <strong>Altering Quarks:</strong> To get Deuterium from Hydrogen, a proton must physically be converted into a neutron.
+                            This strictly requires the <strong>Weak Nuclear Force</strong> to flip quarks. Chemistry is fundamentally incapable of this.</li>
+                        <li class="fragment fade-in-then-semi-out">
+                            <strong>Conclusion:</strong> A nuclear event is definitively happening in a <strong>low-energy</strong>, solid-state environment.
+                            (aka. <em>Cold Fusion</em>, <em>LENR</em>)
                         </li>
                     </ul>
                 </section>
@@ -172,23 +285,35 @@
                     <h2>The Mystery: Where is the Radiation?</h2>
                     <p>If a nuclear reaction is happening on a laboratory bench, why aren't the researchers dead?</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             In standard vacuum physics, generating Deuterium and fusing it produces high-energy
                             <strong>gamma rays</strong> and <strong>rogue neutrons</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             A rogue neutron is like a memory leak in a computer system—it penetrates surrounding
                             materials, corrupting their atomic structure and making them highly radioactive.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             However, in these specific Titanium experiments, Geiger counters detect
                             <strong>zero deadly radiation</strong>.
                         </li>
                     </ul>
-                    <p>
-                        How does the system successfully process a <strong>nuclear transaction</strong> without
-                        emitting </br><strong>toxic matter</strong> "data corruption"?
+                    <p class="fragment fade-in-then-semi-out">
+                        How does the system successfully process a <strong>nuclear transaction</strong> without emitting
+                        <br /><strong>toxic matter</strong> "data corruption"?
                     </p>
+                </section>
+
+                <!-- CHAPTER: Mechanism -->
+                <section
+                    class="chapter"
+                    data-transition="fade"
+                    data-background-color="#071a2b"
+                    data-background-gradient="linear-gradient(135deg, #071a2b 0%, #2b1a07 55%, #0b3a3a 100%)"
+                    data-slide-number="false"
+                >
+                    <h2 class="center-text">Mechanism</h2>
+                    <p class="center-text">Nuclear, but (maybe) radiation-free</p>
                 </section>
 
                 <!-- SLIDE 6: Step 1: The PEP Reaction -->
@@ -198,18 +323,18 @@
                         To create Deuterium without radiation, the system utilizes a rare three-body interaction known
                         as the <strong>PEP Reaction</strong>:
                     </p>
-                    <p class="center-text highlight">\( p + e^- + p \rightarrow D + \nu_e \)</p>
+                    <p class="center-text highlight fragment fade-in">\( p + e^- + p \rightarrow D + \nu_e \)</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Catalyst:</strong> The dense electron cloud of the titanium lattice perfectly
                             screens (reduces) the <strong>Coulomb barrier</strong> (the natural repulsion between protons).
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Momentum Conservation:</strong> The reaction generates \( 1.44 \text{ MeV} \).
                             Because the output is a heavy Deuteron (\( D \)) and a nearly massless electron neutrino (\(
                             \nu_e \)), physics dictates the lightest particle takes the energy.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Result:</strong> The <strong>neutrino</strong> carries away ~99.9% of the energy at near
                             light-speed. Because neutrinos barely interact with normal matter, the energy <strong>safely</strong> exits
                             the Earth entirely.
@@ -222,14 +347,14 @@
                     <h2>Step 2: The 24 MeV Problem</h2>
                     <h3>(Theory)</h3>
                     <p>Creating Deuterium is safe, but as it accumulates, the Deuterons fuse together.</p>
-                    <p class="center-text highlight">\( D + D \rightarrow {}^4He + 24 \text{ MeV} \)</p>
+                    <p class="center-text highlight fragment fade-in">\( D + D \rightarrow {}^4He + 24 \text{ MeV} \)</p>
                     <ul>
-                        <li>In standard physics, this specific fusion emits a lethal <strong>24 MeV gamma ray</strong>.</li>
-                        <li>
-                            To explain the lack of gamma rays, Modanese relies on the legacy of</br><strong>Giuliano Preparata</strong> and
+                        <li class="fragment fade-in-then-semi-out">In standard physics, this specific fusion emits a lethal <strong>24 MeV gamma ray</strong>.</li>
+                        <li class="fragment fade-in-then-semi-out">
+                            To explain the lack of gamma rays, Modanese relies on the legacy of<br /><strong>Giuliano Preparata</strong> and
                             the theory of <strong>Coherent Quantum Electrodynamics (QED)</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Concept:</strong> Atoms in a tight crystalline lattice do not act as independent
                             agents. They exchange photons so rapidly they enter a "<em>superradiant</em>" <strong>synchronized</strong> state.
                         </li>
@@ -237,15 +362,27 @@
                     <p class="footnote">G. Modanese, "Coherent Plasma in a Lattice" (2022-05)</p>
                 </section>
 
+                <!-- CHAPTER: Potentials -->
+                <section
+                    class="chapter"
+                    data-transition="fade"
+                    data-background-color="#071a2b"
+                    data-background-gradient="linear-gradient(135deg, #071a2b 0%, #1a0730 55%, #0b3a3a 100%)"
+                    data-slide-number="false"
+                >
+                    <h2 class="center-text">Potentials</h2>
+                    <p class="center-text">Why \( \mathbf{A} \) can matter even when \( \mathbf{E}, \mathbf{B} = 0 \)</p>
+                </section>
+
                 <!-- NEW SLIDE 8: Explaining Maxwell (Frontend vs Backend) -->
                 <section>
                     <h2>Electromagnetism: FE vs. BE</h2>
                     <p>Let's review Maxwell’s equations of electromagnetism:</p>
                     <ul>
-                        <li><strong>The "Frontend" Observable API:</strong> The Electric Field (\( \mathbf{E} \)) and Magnetic Field (\( \mathbf{B} \)).
+                        <li class="fragment fade-in-then-semi-out"><strong>The "Frontend" Observable API:</strong> The Electric Field (\( \mathbf{E} \)) and Magnetic Field (\( \mathbf{B} \)).
                             These are the physical forces we measure. They push electrons around. Standard antennas, radios, and gamma rays are just
                             oscillating \( \mathbf{E} \) and \( \mathbf{B} \) fields.</li>
-                        <li><strong>The "Backend" Underlying State:</strong> To calculate \( \mathbf{E} \) and \( \mathbf{B} \), physicists use two deeper
+                        <li class="fragment fade-in-then-semi-out"><strong>The "Backend" Underlying State:</strong> To calculate \( \mathbf{E} \) and \( \mathbf{B} \), physicists use two deeper
                             mathematical constructs:
                             <ul>
                                 <li>The <strong>Scalar Potential (\( \phi \))</strong>: Think of this like electric pressure or voltage—a single number
@@ -254,25 +391,25 @@
                                     is just a derivative of this underlying state (\( \mathbf{B} = \nabla \times \mathbf{A} \)).</li>
                             </ul>
                         </li>
-                        <li>In 19th-century classical physics, \( \mathbf{A} \) and \( \phi \) were considered mere
-                            </br>"helper variables"—useful for math, but lacking physical reality.</li>
+                        <li class="fragment fade-in-then-semi-out">In 19th-century classical physics, \( \mathbf{A} \) and \( \phi \) were considered mere
+                            <br />"helper variables"—useful for math, but lacking physical reality.</li>
                     </ul>
                 </section>
 
                 <!-- NEW SLIDE 9: The Quantum Reality (Aharonov-Bohm) -->
                 <section>
-                    <h2>The Quantum Reality: </br>The Source Code</h2>
+                    <h2>The Quantum Reality: <br />The Source Code</h2>
                     <p>In 1959, the <strong>Aharonov-Bohm effect</strong> showed that \( \mathbf{A} \) and \( \phi \) are the <em>true</em>
                         fundamental reality.</p>
                     <ul>
-                        <li><strong>The Experiment:</strong> Physicists created a region of space where both \( \mathbf{E} = 0 \) and \( \mathbf{B} = 0 \),
+                        <li class="fragment fade-in-then-semi-out"><strong>The Experiment:</strong> Physicists created a region of space where both \( \mathbf{E} = 0 \) and \( \mathbf{B} = 0 \),
                             but the underlying Vector Potential (\( \mathbf{A} \)) was <strong>non-zero</strong>.</li>
-                        <li><strong>The Result:</strong> Electrons passing through this "empty" space <strong>physically reacted</strong>.
+                        <li class="fragment fade-in-then-semi-out"><strong>The Result:</strong> Electrons passing through this "empty" space <strong>physically reacted</strong>.
                             Their <strong>quantum phase</strong> (their wave state) <strong>shifted</strong>, despite feeling zero physical force.</li>
-                        <li><strong>The Analogy:</strong> \( \mathbf{E} \) and \( \mathbf{B} \) are just the UI rendered on the screen.
+                        <li class="fragment fade-in-then-semi-out"><strong>The Analogy:</strong> \( \mathbf{E} \) and \( \mathbf{B} \) are just the UI rendered on the screen.
                             \( \mathbf{A} \) and \( \phi \) are the backend database. You can alter the database and change the system state
                             even if the UI shows absolutely nothing.</li>
-                        <li><strong>Why this matters:</strong> To suppress a 24 MeV gamma ray, the lattice must manipulate the
+                        <li class="fragment fade-in-then-semi-out"><strong>Why this matters:</strong> To suppress a 24 MeV gamma ray, the lattice must manipulate the
                             backend database (\( \mathbf{A} \)) directly, bypassing the generation of the deadly \( \mathbf{E} \) and \( \mathbf{B} \)
                             "UI" entirely.</li>
                     </ul>
@@ -288,16 +425,16 @@
                         <strong>Vector Potential (\( \mathbf{A} \))</strong>.
                     </p>
                     <ul>
-                        <li>Think of the Vector Potential as a Global State Manager for the crystal.</li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">Think of the Vector Potential as a Global State Manager for the crystal.</li>
+                        <li class="fragment fade-in-then-semi-out">
                             When \( D + D \) fuses, the 24 MeV of energy is <strong>not</strong> localized to a single
                             atom.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Instead, the energy is instantly uploaded into the macroscopic Vector Potential standing
                             wave.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Because the energy is absorbed by the collective field, the violent gamma-ray photon is
                             never allowed to compile. The lattice acts as an electromagnetic shock absorber.
                         </li>
@@ -309,19 +446,19 @@
                     <h2>Why Doesn't the Energy Destroy the Lattice?</h2>
                     <p>If the lattice absorbs 24 MeV, why doesn't it just instantly vaporize?</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Standard electromagnetic waves (like radio or light) are "transverse" and cause rapid
                             <strong>dissipation</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Modanese proves mathematically that transient nuclear currents inside a coherent lattice
                             generate <strong>Scalar (or Longitudinal) Electromagnetic Fields</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Scalar fields have a unique property: they <em>cannot</em> radiate away into free space.
                             There is <strong>no dissipation</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             The energy is <strong>safely trapped</strong>, "sloshing" back and forth inside the medium without destroying
                             the physical structure.
                         </li>
@@ -337,17 +474,17 @@
                     <h2>Translating Quantum Slosh into Safe Heat</h2>
                     <p>How does the system finally bleed off this trapped energy?</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             The authors model the atoms of the lattice as <strong>Harmonic Qubits</strong> connected by
                             long-range photon coupling.
                         </li>
-                        <li>This allows for a process called "<em>superradiant</em> decay."</li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">This allows for a process called "<em>superradiant</em> decay."</li>
+                        <li class="fragment fade-in-then-semi-out">
                             Instead of <strong>1 atom</strong> vibrating with <strong>24,000,000 eV</strong> of energy
                             (which means it explodes), the standing wave forces <strong>1,000,000,000 atoms</strong> to
                             vibrate <strong>simultaneously</strong> (coherence) with <strong>0.024 eV</strong> of energy.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Result:</strong> The <strong>massive nuclear payload</strong> is safely dispersed as
                             macroscopic <em>acoustic</em> vibrations (Phonons). We experience this simply as pure, continuous
                             <strong>Heat</strong>.
@@ -364,21 +501,33 @@
                     <h2>The Ultimate Built-In Thermostat</h2>
                     <p>Why <strong>can't</strong> this system cause a <strong>nuclear meltdown</strong> like Chernobyl?</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             The entire reaction is entirely dependent on the <strong>phase coherence</strong> of the
                             lattice.
                         </li>
-                        <li>If the reaction produces heat too quickly, the titanium lattice physically expands.</li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">If the reaction produces heat too quickly, the titanium lattice physically expands.</li>
+                        <li class="fragment fade-in-then-semi-out">
                             This expansion <strong>breaks</strong> the precise geometry required for the standing wave.
                             The <strong>Coherent Plasma collapses</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Without the Vector Potential (\( \mathbf{A} \)), the <strong>Coulomb barrier</strong>
                             instantly <strong>returns</strong>, and the nuclear fusion <strong>halts</strong>.
                             It is a physically <strong>un-hackable, self-regulating</strong> system.
                         </li>
                     </ul>
+                </section>
+
+                <!-- CHAPTER: Engineering -->
+                <section
+                    class="chapter"
+                    data-transition="fade"
+                    data-background-color="#071a2b"
+                    data-background-gradient="linear-gradient(135deg, #071a2b 0%, #093a2a 55%, #2b1a07 100%)"
+                    data-slide-number="false"
+                >
+                    <h2 class="center-text">Engineering</h2>
+                    <p class="center-text">Turning buffered energy into usable electricity</p>
                 </section>
 
                 <!-- SLIDE 12: The Engineering Bottleneck -->
@@ -389,15 +538,15 @@
                         terrible "API" for modern technology.
                     </p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             To turn heat into electricity, we still rely on 19th-century technology:
-                            </br><strong>boiling water</strong> to create steam to physically spin a massive magnetic turbine.
+                            <br /><strong>boiling water</strong> to create steam to physically spin a massive magnetic turbine.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             This is bottlenecked by the <strong>Carnot Limit</strong> (thermodynamic inefficiency).
-                            </br>We <strong>lose over 60%</strong> of the energy just in the conversion process.
+                            <br />We <strong>lose over 60%</strong> of the energy just in the conversion process.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Ultimate Engineering Goal:</strong> Can we extract the energy
                             <em>while it is still trapped in the Vector Potential (\( \mathbf{A} \))</em>, completely
                             bypassing the generation of heat?
@@ -411,19 +560,19 @@
                     <h3>(Patent)</h3>
                     <p>
                         To extract energy from the Vector Potential (\( \mathbf{A} \)), we must look to
-                        another </br>pioneer of advanced physics: <strong>Dr. Harold E. Puthoff</strong>.
+                        another <br />pioneer of advanced physics: <strong>Dr. Harold E. Puthoff</strong>.
                     </p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Standard antennas (like Wi-Fi) only interact with oscillating Electric (\( \mathbf{E} \))
                             and Magnetic (\( \mathbf{B} \)) fields.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Puthoff designed and patented specialized <strong>quantum circuits</strong> designed specifically to
                             <em>transmit</em> and <em>receive</em> signals (wireless) using <strong>only</strong> the
-                            </br><strong>Vector Potential (\( \mathbf{A} \))</strong> and <strong>Scalar Potential (\( \phi \))</strong>.
+                            <br /><strong>Vector Potential (\( \mathbf{A} \))</strong> and <strong>Scalar Potential (\( \phi \))</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             This is the exact <strong>same</strong> theoretical field that Modanese calculates is <strong>buffering</strong>
                             our nuclear fusion.
                         </li>
@@ -439,17 +588,17 @@
                     <h2>The Aharonov-Bohm Antenna</h2>
                     <p>How does Puthoff's patent extract energy from an invisible field?</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             It relies on the <strong>Aharonov-Bohm Effect</strong>: an established quantum mechanical
                             principle proving that an <strong>electron's phase</strong> will <strong>shift</strong> if it
                             simply passes through a Vector Potential (\( \mathbf{A} \)), even if <strong>zero</strong>
                             physical magnetic field is present.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Puthoff's circuits (using quantum interferometers) detect this phase shift and force
                             <strong>electrons to flow(!)</strong>, creating an <strong>electrical current</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Grand Synthesis:</strong> If we embed Puthoff's Aharonov-Bohm antenna into
                             Modanese's fusing Titanium lattice, the antenna bleeds the 24 MeV directly out of the
                             standing wave as <strong>high-voltage Direct Current (DC)</strong>.
@@ -462,19 +611,19 @@
                     <h2>The Final Bottleneck: Cryogenics</h2>
                     <p>There is one massive <strong>flaw</strong> in this combined architecture:</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Puthoff’s most effective Aharonov-Bohm circuits require
                             <strong>Josephson Junctions</strong>.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Josephson Junctions require <strong>superconductors</strong>, which only work at extreme cryogenic
                             temperatures (liquid helium or nitrogen).
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             You <strong>cannot</strong> put a liquid nitrogen cooling system inside <strong>consumer hardware</strong>
                             like a smartphone battery, an electric vehicle, or a cheap residential power node.
                         </li>
-                        <li>We need a <strong>room-temperature transducer</strong> to replace the superconductor.</li>
+                        <li class="fragment fade-in-then-semi-out">We need a <strong>room-temperature transducer</strong> to replace the superconductor.</li>
                     </ul>
                 </section>
 
@@ -484,16 +633,16 @@
                     <h3>(Insane Speculation)</h3>
                     <p>Maybe we don't need a superconducting circuit if we have the right metamaterial:</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Piezoelectric Materials</strong> possess a unique structural property: when
                             subjected to internal <strong>mechanical stress</strong> (like acoustic phonons), the crystal physically
                             deforms. (e.g. a Turntable Pickup)
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Because the crystal lattice is polarized, this deformation physically <strong>separates</strong>
                             <em>positive</em> and <em>negative</em> charges, generating massive voltages at room temperature.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             If the fusing titanium lattice dumps its energy into intense <strong>phonon vibrations</strong>, a
                             <strong>coupled</strong> piezoelectric crystal would "breathe" with the nuclear energy, instantly
                             <strong>converting</strong> quantum vibrations into <strong>raw electricity</strong>.
@@ -503,21 +652,21 @@
 
                 <!-- SLIDE 17: Archaeo-Mythology meets Physics -->
                 <section>
-                    <h2>Engineered Quartz:</br>A Speculative Leap</h2>
+                    <h2>Engineered Quartz:<br />A Speculative Leap</h2>
                     <p>
                         What is the ultimate piezoelectric harmonic oscillator? <strong>Quartz (\( SiO_2 \))</strong>.
                     </p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             Quartz already runs our modern computational clocks because it maintains perfect phase
                             coherence. It is a macroscopic "harmonic qubit."
                         </li>
-                        <li>Pure quartz lacks free electrons to screen (reduce) the Coulomb barrier.</li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">Pure quartz lacks free electrons to screen (reduce) the Coulomb barrier.</li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Solution:</strong> Grow a synthetic metamaterial. A macro-quartz crystal
                             internally doped with a Titanium-Hydride matrix.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <em>Historical note:</em> This theoretical architecture aligns eerily with "Atlantis" myths
                             (the Tuaoi Stone/Firestone), which described massive, engineered crystals that harvested
                             "cosmic energies" to <strong>wirelessly</strong> power civilizations.
@@ -530,25 +679,37 @@
                     <h2>The Complete System Architecture</h2>
                     <p>If we combine all these theories, the blueprint for the <strong>perfect reactor</strong> is:</p>
                     <ol>
-                        <li><strong>The Fuel:</strong> Ordinary Hydrogen / Heavy Water (Abundant and cheap).</li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out"><strong>The Fuel:</strong> Ordinary Hydrogen / Heavy Water (Abundant and cheap).</li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Engine:</strong> A Titanium-Hydride matrix triggered by thermal cycles
                             (Gamberale).
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Core Logic:</strong> Coherent QED standing waves orchestrate the PEP reaction
                             and fusion (Modanese).
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Buffer:</strong> The Vector Potential (\( \mathbf{A} \)) suppresses gamma rays
                             and buffers the 24 MeV spike.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>The Power Supply:</strong> A surrounding Piezoelectric Quartz lattice acts as an
-                            </br><strong>Aharonov-Bohm transducer</strong>, converting the <strong>scalar field</strong>
+                            <br /><strong>Aharonov-Bohm transducer</strong>, converting the <strong>scalar field</strong>
                             directly into room-temperature <strong>electricity</strong>. (Backup Plan: Puthoff)
                         </li>
                     </ol>
+                </section>
+
+                <!-- CHAPTER: Implications -->
+                <section
+                    class="chapter"
+                    data-transition="fade"
+                    data-background-color="#071a2b"
+                    data-background-gradient="linear-gradient(135deg, #071a2b 0%, #0b3a3a 55%, #2b0720 100%)"
+                    data-slide-number="false"
+                >
+                    <h2 class="center-text">Implications</h2>
+                    <p class="center-text">If it works, what changes?</p>
                 </section>
 
                 <!-- SLIDE 19: Why This Changes Everything -->
@@ -556,44 +717,55 @@
                     <h2>The Future of Energy</h2>
                     <p>If this solid-state architecture proves viable, it renders current infrastructure <strong>obsolete</strong>.</p>
                     <ul>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Zero Radiation:</strong> No toxic waste, no lead shielding, no catastrophic
                             meltdowns.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Infinite Scaling:</strong> No massive magnetic bottles. The reactor could be the
                             size of a shipping container to power a city, or the <strong>size of a coin</strong> to power a laptop for a
                             century.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             <strong>Direct Energy:</strong> By bypassing the Carnot limit of heat, <strong>efficiency</strong> approaches
                             near-theoretical maximums.
                         </li>
-                        <li>
+                        <li class="fragment fade-in-then-semi-out">
                             It represents the <strong>ultimate mastery</strong> of the strong nuclear force through the elegance of
                             <strong>solid-state quantum</strong> engineering.
-                            </br>(Btw probably all advanced civilizations would converge to this "<em>Schelling Point</em>".)
                         </li>
+                        <p class="fragment fade-in-then-semi-out"><em>(BTW: Probably all advanced civilizations would converge to this "<strong>Schelling Point</strong>".)</em></p>
                     </ul>
                 </section>
 
                 <!-- SLIDE 20: Conclusion -->
                 <section>
                     <h2>Conclusion: The Ultimate Upgrade</h2>
-                    <p>An advanced <strong>civilization</strong> does not power its future by setting things on fire, boiling water, or managing toxic waste.
-                       It masters the <strong>quantum fabric</strong> through elegant, solid-state architecture.
+                    <p class="fragment fade-in-then-semi-out">
+                        An advanced <strong>civilization</strong> does not power its future by setting things on
+                        <strong>fire</strong>, <strong>boiling water</strong>, or managing <strong>toxic waste</strong>.
+                        It masters the <strong>quantum fabric</strong> through elegant, solid-state architecture.
                     </p>
-                    <p>The combined frameworks of <strong>Gamberale, Modanese, and Puthoff</strong> point directly to the Holy Grail
-                       of civilization engineering:
+                    <p class="fragment fade-in-then-semi-out">
+                        The combined frameworks of <strong>Gamberale, Modanese, and Puthoff</strong> point directly to
+                        the <em>Holy Grail</em> of civilization‑scale engineering:
                     </p>
-                    <p class="center-text"><strong>direct, radiation-free, possibly wireless, infinite power.</strong>
-                    </p>
-                    <!--<p>Refuse primitive, brute-force APIs of the past. Choose the ultimate civilizational upgrade.-->
-                    </p>
+                    <div class="fragment fade-in-then-semi-out">
+                        <p class="center-text">
+                            <strong>direct, radiation-free, possibly wireless, infinite power.</strong>
+                        </p>
+                        <!--<p>Refuse primitive, brute-force APIs of the past. Choose the ultimate civilizational upgrade.</p>-->
 
-                     <p style="margin-top: 40px; font-size: 1.2em" class="highlight center-text">EOF</p>
-                    <p style="font-size: 0.8em" class="highlight center-text">Grazie.</p>
+                        <p style="margin-top: 40px; font-size: 1.2em" class="highlight center-text">EOF</p>
+                        <p style="font-size: 0.8em" class="highlight center-text">Grazie.</p>
+                    </div>
                 </section>
+            </div>
+            <div class="shortcut-legend" aria-label="Presentation shortcuts">
+                <div class="shortcut-item is-on" data-shortcut="fragments" data-tooltip="press u to toggle fragments reveal">
+                    <span class="shortcut-label">fragments</span>
+                    <span class="shortcut-key">u</span>
+                </div>
             </div>
         </div>
 
@@ -603,9 +775,124 @@
             Reveal.initialize({
                 controls: true,
                 progress: true,
+                slideNumber: "c/t",
+                showSlideNumber: "all",
                 center: true,
                 hash: true,
+                keyboard: {
+                    85: () => toggleFragments(), // U
+                },
+                fragments: false,
                 transition: "slide", // none/fade/slide/convex/concave/zoom
+            });
+
+            const addUndimTriggers = () => {
+                const sections = document.querySelectorAll(".reveal .slides section");
+                sections.forEach((section) => {
+                    const fragments = section.querySelectorAll(".fragment");
+                    if (fragments.length === 0) return;
+                    if (section.querySelector(".undim-trigger")) return;
+
+                    let maxIndex = -1;
+                    fragments.forEach((fragment) => {
+                        const rawIndex = fragment.getAttribute("data-fragment-index");
+                        if (rawIndex === null) return;
+                        const parsedIndex = Number.parseInt(rawIndex, 10);
+                        if (!Number.isNaN(parsedIndex)) {
+                            maxIndex = Math.max(maxIndex, parsedIndex);
+                        }
+                    });
+
+                    const trigger = document.createElement("span");
+                    trigger.className = "fragment undim-trigger";
+                    trigger.setAttribute("data-undim", "true");
+                    trigger.style.display = "none";
+                    if (maxIndex >= 0) {
+                        trigger.setAttribute("data-fragment-index", String(maxIndex + 1));
+                    }
+                    section.appendChild(trigger);
+                });
+            };
+
+            const setUndimState = (section, enabled) => {
+                if (!section) return;
+                if (enabled) {
+                    section.classList.add("undim");
+                } else {
+                    section.classList.remove("undim");
+                }
+            };
+
+            const updateShortcutLegend = () => {
+                const item = document.querySelector('.shortcut-item[data-shortcut="fragments"]');
+                if (!item) return;
+                const enabled = Reveal.getConfig().fragments !== false;
+                item.classList.toggle("is-on", enabled);
+            };
+
+            const updateShortcutLegendVisibility = (section) => {
+                const legend = document.querySelector(".shortcut-legend");
+                if (!legend) return;
+                const hasFragments = Boolean(section && section.querySelector(".fragment"));
+                legend.classList.toggle("is-hidden", !hasFragments);
+            };
+
+            const updateShortcutLegendPosition = () => {
+                const legend = document.querySelector(".shortcut-legend");
+                const slideNumber = document.querySelector(".reveal .slide-number");
+                if (!legend || !slideNumber) return;
+                const rect = slideNumber.getBoundingClientRect();
+                const gap = 8;
+                const right = Math.max(window.innerWidth - rect.left + gap, 40);
+                const bottom = Math.max(window.innerHeight - rect.bottom, 10);
+                legend.style.setProperty("--legend-right", `${right}px`);
+                legend.style.setProperty("--legend-bottom", `${bottom}px`);
+            };
+
+            const toggleFragments = () => {
+                const revealEl = document.querySelector(".reveal");
+                const enabled = Reveal.getConfig().fragments !== false;
+                Reveal.configure({ fragments: !enabled });
+                if (revealEl) {
+                    revealEl.classList.toggle("fragments-off", enabled);
+                }
+                updateShortcutLegend();
+            };
+
+            Reveal.on("ready", () => {
+                addUndimTriggers();
+                const revealEl = document.querySelector(".reveal");
+                if (revealEl) {
+                    revealEl.classList.toggle("fragments-off", Reveal.getConfig().fragments === false);
+                }
+                updateShortcutLegend();
+                updateShortcutLegendVisibility(Reveal.getCurrentSlide());
+                updateShortcutLegendPosition();
+            });
+
+            Reveal.on("fragmentshown", (event) => {
+                if (event.fragment && event.fragment.hasAttribute("data-undim")) {
+                    setUndimState(event.fragment.closest("section"), true);
+                }
+            });
+
+            Reveal.on("fragmenthidden", (event) => {
+                if (event.fragment && event.fragment.hasAttribute("data-undim")) {
+                    setUndimState(event.fragment.closest("section"), false);
+                }
+            });
+
+            Reveal.on("slidechanged", (event) => {
+                const trigger = event.currentSlide
+                    ? event.currentSlide.querySelector(".undim-trigger.visible")
+                    : null;
+                setUndimState(event.currentSlide, Boolean(trigger));
+                updateShortcutLegendVisibility(event.currentSlide);
+                updateShortcutLegendPosition();
+            });
+
+            window.addEventListener("resize", () => {
+                updateShortcutLegendPosition();
             });
         </script>
     </body>
