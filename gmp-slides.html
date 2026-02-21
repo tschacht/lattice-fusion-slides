@@ -770,7 +770,9 @@
         </div>
 
         <!-- Reveal.js Scripts -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+        <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
+        <script src="https://unpkg.com/reveal.js@5.2.1/plugin/search/search.js"></script>
+
         <script>
             Reveal.initialize({
                 controls: true,
@@ -784,6 +786,7 @@
                 },
                 fragments: false,
                 transition: "slide", // none/fade/slide/convex/concave/zoom
+                plugins: [ RevealSearch ],
             });
 
             const addUndimTriggers = () => {
