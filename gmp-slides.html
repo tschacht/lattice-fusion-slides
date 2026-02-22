@@ -1491,6 +1491,13 @@
         const amplitudeEl = document.getElementById('wave-amplitude')
         let animationFrameId
         let startTime = null
+        let amplitudeMod = 1
+        let amplitudeModTarget = 1
+        let lastAmplitudeUpdate = 0
+        let phaseDrift = 0
+        let phaseDriftTarget = 0
+        let lastPhaseUpdate = 0
+        const microWavePhase = Math.random() * Math.PI * 2
 
         // The mathematical temporal oscillation of the standing wave
         function animateStandingWave(timestamp) {
@@ -1500,7 +1507,37 @@
           // The math: Amplitude * sin(angular_frequency * time)
           // Divide elapsed by a large number (e.g., 3000) for a slow, 3-second meditative breathing.
           // Multiply by max displacement scale (e.g., 12 pixels).
-          const currentScale = 7 * Math.sin(elapsed / 3000)
+          const WAVE_SCALE_PX = 7
+          const WAVE_PERIOD_MS = 3000
+
+          // Randomized amplitude modulation (slow, smooth breathing variation).
+          const AMPLITUDE_MOD_RANGE = 0.35 // +/- 35% of base amplitude. Set to 0 to disable amplitude modulation.
+          const AMPLITUDE_MOD_UPDATE_MS = 1200
+          const AMPLITUDE_MOD_EASE = 0.03 // higher = faster chase toward random target
+          if (elapsed - lastAmplitudeUpdate > AMPLITUDE_MOD_UPDATE_MS) {
+            lastAmplitudeUpdate = elapsed
+            amplitudeModTarget = 1 + (Math.random() * 2 - 1) * AMPLITUDE_MOD_RANGE
+          }
+          amplitudeMod += (amplitudeModTarget - amplitudeMod) * AMPLITUDE_MOD_EASE
+
+          // Randomized phase drift (keeps timing intact but adds slight organic wander).
+          const PHASE_DRIFT_RANGE = 0.45 // Radians. Set to 0 to disable phase drift.
+          const PHASE_DRIFT_UPDATE_MS = 1500
+          const PHASE_DRIFT_EASE = 0.02
+          if (elapsed - lastPhaseUpdate > PHASE_DRIFT_UPDATE_MS) {
+            lastPhaseUpdate = elapsed
+            phaseDriftTarget = (Math.random() * 2 - 1) * PHASE_DRIFT_RANGE
+          }
+          phaseDrift += (phaseDriftTarget - phaseDrift) * PHASE_DRIFT_EASE
+
+          // Micro-wave texture layer (fixed period, random start phase for variation per load).
+          const MICRO_WAVE_AMPLITUDE_PX = 1.6 // Set to 0 to disable the micro-wave layer.
+          const MICRO_WAVE_PERIOD_MS = 2000
+          const microWave =
+            MICRO_WAVE_AMPLITUDE_PX * Math.sin(microWavePhase + (elapsed / MICRO_WAVE_PERIOD_MS) * Math.PI * 2)
+
+          const mainWave = Math.sin(elapsed / WAVE_PERIOD_MS + phaseDrift)
+          const currentScale = WAVE_SCALE_PX * amplitudeMod * mainWave + microWave
 
           amplitudeEl.setAttribute('scale', currentScale)
 
