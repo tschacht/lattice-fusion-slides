@@ -124,9 +124,13 @@
       .reveal .shortcut-legend.is-hidden {
         display: none;
       }
+      .reveal .shortcut-legend.is-hidden-by-user {
+        display: none;
+      }
       .reveal .shortcut-item {
         position: relative;
         display: inline-flex;
+        flex-direction: row;
         align-items: center;
         gap: 4px;
         padding: 2px 5px;
@@ -145,6 +149,9 @@
       }
       .reveal .shortcut-item.is-on .shortcut-key {
         background: rgba(0, 0, 0, 0.35);
+      }
+      .reveal .shortcut-item.is-hidden {
+        display: none;
       }
       .reveal .shortcut-key {
         display: inline-block;
@@ -178,6 +185,385 @@
         opacity: 1;
         transform: translateY(0);
       }
+      @property --vortex-spin {
+        syntax: '<angle>';
+        inherits: true;
+        initial-value: 0deg;
+      }
+      @property --wobble-blur {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-x {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-y {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-x-fast {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-y-fast {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-x-slow {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-y-slow {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-blur-fast {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-blur-slow {
+        syntax: '<length>';
+        inherits: true;
+        initial-value: 0px;
+      }
+      @property --wobble-contrast {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --wobble-contrast-fast {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --wobble-contrast-slow {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --wobble-strength {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --wobble-fast-mix {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --wobble-slow-mix {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --shimmer-phase {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      .reveal {
+        --shimmer-strength: 0;
+        --speckle-strength: 0;
+        --wobble-amount: 0px;
+        --wobble-jitter: 0px;
+        --wobble-contrast-amount: 0;
+        --wobble-strength: 0;
+        --precession-amount: 0deg;
+        --wobble-fast-duration: 0.1s;
+        --wobble-slow-duration: 0.6s;
+        --wobble-echo-duration: 1s;
+        --precession-duration: 5.2s;
+        --shimmer-duration: 1.9s;
+        --speckle-duration: 6.2s;
+      }
+      .reveal.effect-shimmer {
+        --shimmer-strength: 0.85;
+      }
+      .reveal.effect-speckle {
+        --speckle-strength: 0.45;
+      }
+      .reveal.effect-wobble {
+        --wobble-amount: 2.1px;
+        --wobble-jitter: 1.32px;
+        --wobble-contrast-amount: 0.31;
+        --wobble-strength: 1;
+        --wobble-fast-duration: 0.1s;
+        --wobble-slow-duration: 0.6s;
+        --wobble-echo-duration: 1s;
+      }
+      .reveal.effect-precession {
+        /* Rock amplitude (30% less than 72deg). */
+        --precession-amount: 4.2deg;
+        /* Rock speed: 0.2s period. */
+        --precession-duration: 0.06s;
+      }
+      /* Effect 4 visibility: use a stronger blend mode without changing vortex color/alpha knobs. */
+      .reveal.effect-precession .quantum-ripple {
+        mix-blend-mode: overlay;
+      }
+      /* The class that triggers the Vector Potential distortion */
+      .coherent-lattice-active {
+        /* Apply the invisible SVG math to the whole slide */
+        filter: url('#vector-potential');
+
+        /* Optional: slightly scale up to prevent edges from pulling inward during distortion */
+        transform: scale(1.02);
+      }
+      .reveal .slide-background.present,
+      .reveal .slide-background.present .slide-background-content {
+        overflow: hidden;
+      }
+      .reveal .slide-background.present .slide-background-content {
+        position: relative;
+      }
+      /* Container that holds the ripples behind the text but above the background */
+      .quantum-ripple-container {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 2; /* Ensure ripples render above slide backgrounds */
+        pointer-events: none; /* Prevents it from interfering with clicks/swipes */
+      }
+
+      /* The Ripple Element */
+      .quantum-ripple {
+        position: absolute;
+        border-radius: 50%;
+        /* Vortex-like swirl that picks up background hues via blend mode */
+        background:
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(0, 0, 0, var(--vortex-core, 0.38)) 0%,
+            rgba(0, 0, 0, var(--vortex-inner, 0.2)) 28%,
+            rgba(255, 255, 255, var(--vortex-highlight, 0.08)) 55%,
+            rgba(255, 255, 255, 0) 75%
+          ),
+          conic-gradient(
+            from var(--vortex-spin, 0deg),
+            rgba(255, 255, 255, var(--vortex-highlight-strong, 0.34)),
+            rgba(255, 255, 255, 0) 30%,
+            rgba(0, 0, 0, var(--vortex-shadow, 0.26)) 54%,
+            rgba(255, 255, 255, var(--vortex-highlight, 0.3)) 78%,
+            rgba(255, 255, 255, var(--vortex-highlight-strong, 0.34))
+          );
+        background-blend-mode: multiply;
+        mix-blend-mode: soft-light;
+        box-shadow:
+          inset 0 0 18px rgba(0, 0, 0, 0.28),
+          0 0 14px rgba(255, 255, 255, 0.08);
+        filter: blur(calc(var(--vortex-blur, 1.3px) + var(--wobble-blur-fast, 0px) + var(--wobble-blur-slow, 0px)))
+          saturate(1.25)
+          contrast(calc(var(--vortex-contrast, 1.12) + var(--wobble-contrast-fast, 0) + var(--wobble-contrast-slow, 0)))
+          brightness(calc(1 + ((var(--wobble-contrast-fast, 0) + var(--wobble-contrast-slow, 0)) * 0.6)));
+        -webkit-mask: radial-gradient(
+          circle,
+          rgba(0, 0, 0, 0) 28%,
+          rgba(0, 0, 0, 0.12) 36%,
+          rgba(0, 0, 0, 0.82) 50%,
+          rgba(0, 0, 0, 0.6) 70%,
+          rgba(0, 0, 0, 0) 84%
+        );
+        mask: radial-gradient(
+          circle,
+          rgba(0, 0, 0, 0) 28%,
+          rgba(0, 0, 0, 0.12) 36%,
+          rgba(0, 0, 0, 0.82) 50%,
+          rgba(0, 0, 0, 0.6) 70%,
+          rgba(0, 0, 0, 0) 84%
+        );
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        opacity: 0;
+        /* Slower, smoother expansion */
+        animation:
+          expandRipple var(--expand-duration, 8s) cubic-bezier(0.2, 0.6, 0.2, 1) forwards,
+          rippleWobbleFast var(--wobble-fast-duration, 0.1s) ease-in-out infinite,
+          rippleWobbleSlow var(--wobble-slow-duration, 0.6s) ease-in-out infinite,
+          rippleWobbleEcho var(--wobble-echo-duration, 1s) ease-out infinite,
+          ripplePrecession var(--precession-duration, 5.2s) ease-in-out infinite;
+      }
+      .quantum-ripple::before,
+      .quantum-ripple::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .quantum-ripple::before {
+        background: inherit;
+        mix-blend-mode: screen;
+        filter: blur(0.8px);
+        opacity: calc(var(--shimmer-strength, 0) * var(--shimmer-phase, 0));
+        animation: rippleShimmer var(--shimmer-duration, 1.9s) ease-in-out infinite;
+      }
+      .quantum-ripple::after {
+        background-image: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.85) 0px,
+          rgba(255, 255, 255, 0.85) 1px,
+          rgba(255, 255, 255, 0) 2.2px
+        );
+        background-size: 7px 7px;
+        mix-blend-mode: screen;
+        opacity: var(--speckle-strength, 0);
+        filter: blur(0.6px);
+        animation: speckleDrift var(--speckle-duration, 6.2s) linear infinite;
+      }
+
+      @keyframes expandRipple {
+        0% {
+          transform: translate(
+              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+            )
+            scale(0) rotate(0deg);
+          opacity: var(--vortex-opacity-start, 0);
+        }
+        12% {
+          /* Swirl speed: reduce rotation to slow the vortex spin */
+          transform: translate(
+              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+            )
+            scale(0.45) rotate(96deg);
+          opacity: var(--vortex-opacity-mid, 0.55);
+        }
+        100% {
+          /* Swirl speed: total rotation amount (20% slower than before) */
+          transform: translate(
+              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+            )
+            scale(3.2) rotate(370deg);
+          opacity: var(--vortex-opacity-end, 0);
+        }
+      }
+      @keyframes rippleShimmer {
+        0%,
+        100% {
+          --shimmer-phase: 0.2;
+        }
+        50% {
+          --shimmer-phase: 1;
+        }
+      }
+      @keyframes speckleDrift {
+        0% {
+          transform: translate(0, 0) scale(1);
+        }
+        50% {
+          transform: translate(-6%, 4%) scale(1.02);
+        }
+        100% {
+          transform: translate(4%, -5%) scale(1);
+        }
+      }
+      @keyframes rippleWobbleFast {
+        0%,
+        100% {
+          --wobble-blur-fast: calc(
+            var(--wobble-amount, 0px) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0) * -0.5
+          );
+          --wobble-contrast-fast: calc(
+            var(--wobble-contrast-amount, 0) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0) * 0.5
+          );
+          --wobble-x-fast: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0) * -0.7
+          );
+          --wobble-y-fast: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0) * 0.5
+          );
+        }
+        50% {
+          --wobble-blur-fast: calc(var(--wobble-amount, 0px) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0));
+          --wobble-contrast-fast: calc(
+            var(--wobble-contrast-amount, 0) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0) * -0.4
+          );
+          --wobble-x-fast: calc(var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0));
+          --wobble-y-fast: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-fast-mix, 0) * -0.8
+          );
+        }
+      }
+      @keyframes rippleWobbleSlow {
+        0%,
+        100% {
+          --wobble-blur-slow: calc(
+            var(--wobble-amount, 0px) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * -0.25
+          );
+          --wobble-contrast-slow: calc(
+            var(--wobble-contrast-amount, 0) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * 0.3
+          );
+          --wobble-x-slow: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * 0.45
+          );
+          --wobble-y-slow: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * -0.4
+          );
+        }
+        50% {
+          --wobble-blur-slow: calc(
+            var(--wobble-amount, 0px) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * 0.6
+          );
+          --wobble-contrast-slow: calc(
+            var(--wobble-contrast-amount, 0) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * -0.2
+          );
+          --wobble-x-slow: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * -0.6
+          );
+          --wobble-y-slow: calc(
+            var(--wobble-jitter, 0px) * var(--wobble-strength, 0) * var(--wobble-slow-mix, 0) * 0.5
+          );
+        }
+      }
+      @keyframes rippleWobbleEcho {
+        0% {
+          --wobble-fast-mix: 0;
+          --wobble-slow-mix: 0;
+        }
+        6% {
+          /* Sharp attack: fast strobe dominates immediately */
+          --wobble-fast-mix: 1;
+          --wobble-slow-mix: 0;
+        }
+        30% {
+          /* Begin easing into the slower wobble */
+          --wobble-fast-mix: 0.75;
+          --wobble-slow-mix: 0.25;
+        }
+        60% {
+          /* Sustained phase: slower wobble becomes the lead */
+          --wobble-fast-mix: 0.35;
+          --wobble-slow-mix: 0.6;
+        }
+        100% {
+          /* Echo tail: mostly slow wobble, faint fast residue */
+          --wobble-fast-mix: 0.15;
+          --wobble-slow-mix: 0.8;
+        }
+      }
+      @keyframes ripplePrecession {
+        0%,
+        100% {
+          /* Effect 4: precession uses `rotate` (individual transform) so it composes with `transform`
+             from `expandRipple` (no need to animate custom properties for visibility). */
+          rotate: calc(var(--precession-amount, 0deg) * -1);
+        }
+        50% {
+          rotate: var(--precession-amount, 0deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -187,9 +573,11 @@
         <section>
           <h2>Solid-State <br />Quantum Nuclear Energy</h2>
           <h3>Bridging <em>Coherent QED</em> & <br />Direct Energy Extraction</h3>
-          <p class="center-text" style="margin-top: 50px; font-size: 0.9em">
-            <span>\( \mathbf{4E} \xrightarrow{\text{goes}} {}^4He \)</span>
-          </p>
+          <div class="coherent-lattice-target">
+            <p class="center-text" style="margin-top: 50px; font-size: 0.9em">
+              <span>\( \mathbf{4E} \xrightarrow{\text{goes}} {}^4He \)</span>
+            </p>
+          </div>
         </section>
 
         <!-- SLIDE 2: The Energy Problem -->
@@ -396,6 +784,7 @@
                 </li>
                 <li>
                   The <strong>Vector Potential (<span>\( \mathbf{A} \)</span>)</strong>: A directional flow field.
+                  <!-- prettier-ignore -->
                   Mathematically, the magnetic field is just a derivative of this underlying state
                   (<span>\( \mathbf{B} = \nabla \times \mathbf{A} \)</span>).
                 </li>
@@ -795,11 +1184,65 @@
       </div>
       <div class="shortcut-legend" aria-label="Presentation shortcuts">
         <div class="shortcut-item is-on" data-shortcut="fragments" data-tooltip="press u to toggle fragments reveal">
-          <span class="shortcut-label">fragments</span>
           <span class="shortcut-key">u</span>
+          <span class="shortcut-label">fragments</span>
+        </div>
+        <div
+          class="shortcut-item"
+          data-shortcut="shimmer"
+          data-scope="chapter"
+          data-tooltip="press 1 to toggle phase shimmer"
+        >
+          <span class="shortcut-key">1</span>
+          <span class="shortcut-label">phase shimmer</span>
+        </div>
+        <div
+          class="shortcut-item"
+          data-shortcut="speckle"
+          data-scope="chapter"
+          data-tooltip="press 2 to toggle interference speckle"
+        >
+          <span class="shortcut-key">2</span>
+          <span class="shortcut-label">interference speckle</span>
+        </div>
+        <div
+          class="shortcut-item"
+          data-shortcut="wobble"
+          data-scope="chapter"
+          data-tooltip="press 3 to toggle micro wobble"
+        >
+          <span class="shortcut-key">3</span>
+          <span class="shortcut-label">micro wobble</span>
+        </div>
+        <div
+          class="shortcut-item"
+          data-shortcut="precession"
+          data-scope="chapter"
+          data-tooltip="press 4 to toggle vortex precession"
+        >
+          <span class="shortcut-key">4</span>
+          <span class="shortcut-label">vortex precession</span>
         </div>
       </div>
     </div>
+
+    <!-- The Vector Potential Standing Wave Filter -->
+    <svg style="display: none">
+      <filter id="vector-potential" x="-20%" y="-20%" width="140%" height="140%">
+        <!-- Generate a low-frequency, fluid-like mathematical lattice structure -->
+        <feTurbulence type="fractalNoise" baseFrequency="0.015 0.02" numOctaves="2" result="quantum_field" />
+        <!-- Displace the slide (text + background) based on the field.
+             The 'scale' is set to 0 initially, and will be animated by JS -->
+        <feDisplacementMap
+          id="wave-amplitude"
+          in="SourceGraphic"
+          in2="quantum_field"
+          scale="0"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </svg>
 
     <!-- Reveal.js Scripts -->
     <script src="https://unpkg.com/reveal.js@5.2.1/dist/reveal.js"></script>
@@ -831,7 +1274,12 @@
         center: true,
         hash: true,
         keyboard: {
-          85: () => toggleFragments(), // U
+          85: () => toggleFragments(), // u
+          49: () => toggleQuantumEffect('shimmer'), // 1
+          50: () => toggleQuantumEffect('speckle'), // 2
+          51: () => toggleQuantumEffect('wobble'), // 3
+          52: () => toggleQuantumEffect('precession'), // 4
+          69: () => toggleQuantumLegend(), // e
         },
         fragments: false,
         transition: 'slide', // none/fade/slide/convex/concave/zoom
@@ -875,18 +1323,69 @@
         }
       }
 
+      // Quantum effect toggles (default OFF). Flip these or use keys 1-4.
+      const quantumEffects = {
+        shimmer: true,
+        speckle: false,
+        wobble: true,
+        precession: true,
+      }
+
+      const updateQuantumEffectClasses = () => {
+        const revealEl = document.querySelector('.reveal')
+        if (!revealEl) return
+        revealEl.classList.toggle('effect-shimmer', quantumEffects.shimmer)
+        revealEl.classList.toggle('effect-speckle', quantumEffects.speckle)
+        revealEl.classList.toggle('effect-wobble', quantumEffects.wobble)
+        revealEl.classList.toggle('effect-precession', quantumEffects.precession)
+      }
+
+      const toggleQuantumEffect = (effectKey) => {
+        if (!(effectKey in quantumEffects)) return
+        quantumEffects[effectKey] = !quantumEffects[effectKey]
+        updateQuantumEffectClasses()
+        updateShortcutLegend()
+      }
+
       const updateShortcutLegend = () => {
-        const item = document.querySelector('.shortcut-item[data-shortcut="fragments"]')
-        if (!item) return
-        const enabled = Reveal.getConfig().fragments !== false
-        item.classList.toggle('is-on', enabled)
+        const fragmentItem = document.querySelector('.shortcut-item[data-shortcut="fragments"]')
+        if (fragmentItem) {
+          const enabled = Reveal.getConfig().fragments !== false
+          fragmentItem.classList.toggle('is-on', enabled)
+        }
+
+        const effectItems = {
+          shimmer: document.querySelector('.shortcut-item[data-shortcut="shimmer"]'),
+          speckle: document.querySelector('.shortcut-item[data-shortcut="speckle"]'),
+          wobble: document.querySelector('.shortcut-item[data-shortcut="wobble"]'),
+          precession: document.querySelector('.shortcut-item[data-shortcut="precession"]'),
+        }
+
+        Object.entries(effectItems).forEach(([key, item]) => {
+          if (!item) return
+          item.classList.toggle('is-on', Boolean(quantumEffects[key]))
+        })
       }
 
       const updateShortcutLegendVisibility = (section) => {
         const legend = document.querySelector('.shortcut-legend')
         if (!legend) return
         const hasFragments = Boolean(section && section.querySelector('.fragment'))
-        legend.classList.toggle('is-hidden', !hasFragments)
+        const isChapter = Boolean(section && section.classList.contains('chapter'))
+
+        const fragmentItem = legend.querySelector('.shortcut-item[data-shortcut="fragments"]')
+        if (fragmentItem) {
+          fragmentItem.classList.toggle('is-hidden', !hasFragments)
+        }
+
+        const chapterItems = legend.querySelectorAll('.shortcut-item[data-scope="chapter"]')
+        chapterItems.forEach((item) => {
+          item.classList.toggle('is-hidden', !isChapter)
+        })
+
+        const showChapterLegend = isChapter && quantumLegendVisible
+        legend.classList.toggle('is-hidden', !hasFragments && !showChapterLegend)
+        legend.classList.toggle('is-hidden-by-user', isChapter && !quantumLegendVisible)
       }
 
       const updateShortcutLegendPosition = () => {
@@ -911,12 +1410,21 @@
         updateShortcutLegend()
       }
 
+      let quantumLegendVisible = false
+      const toggleQuantumLegend = () => {
+        const current = Reveal.getCurrentSlide()
+        if (!current || !current.classList.contains('chapter')) return
+        quantumLegendVisible = !quantumLegendVisible
+        updateShortcutLegendVisibility(current)
+      }
+
       Reveal.on('ready', () => {
         addUndimTriggers()
         const revealEl = document.querySelector('.reveal')
         if (revealEl) {
           revealEl.classList.toggle('fragments-off', Reveal.getConfig().fragments === false)
         }
+        updateQuantumEffectClasses()
         updateShortcutLegend()
         updateShortcutLegendVisibility(Reveal.getCurrentSlide())
         updateShortcutLegendPosition()
@@ -943,6 +1451,235 @@
 
       window.addEventListener('resize', () => {
         updateShortcutLegendPosition()
+      })
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const amplitudeEl = document.getElementById('wave-amplitude')
+        let animationFrameId
+        let startTime = null
+
+        // The mathematical temporal oscillation of the standing wave
+        function animateStandingWave(timestamp) {
+          if (!startTime) startTime = timestamp
+          const elapsed = timestamp - startTime
+
+          // The math: Amplitude * sin(angular_frequency * time)
+          // Divide elapsed by a large number (e.g., 3000) for a slow, 3-second meditative breathing.
+          // Multiply by max displacement scale (e.g., 12 pixels).
+          const currentScale = 7 * Math.sin(elapsed / 3000)
+
+          amplitudeEl.setAttribute('scale', currentScale)
+
+          animationFrameId = requestAnimationFrame(animateStandingWave)
+        }
+
+        const updateCoherentLattice = (slide) => {
+          // Clean up: make sure the filter class is removed from previous slides
+          document.querySelectorAll('.coherent-lattice-active').forEach((el) => {
+            el.classList.remove('coherent-lattice-active')
+          })
+
+          let shouldAnimate = false
+          if (slide) {
+            const targets = slide.querySelectorAll('.coherent-lattice-target')
+            if (targets.length > 0) {
+              targets.forEach((el) => {
+                el.classList.add('coherent-lattice-active')
+              })
+              shouldAnimate = true
+            } else if (slide.classList.contains('chapter')) {
+              // Fall back to full-slide effect for chapter covers
+              slide.classList.add('coherent-lattice-active')
+              const background = document.querySelector('.reveal .slide-background.present')
+              if (background) {
+                background.classList.add('coherent-lattice-active')
+              }
+              shouldAnimate = true
+            }
+          }
+
+          if (shouldAnimate) {
+            // Start the meditative breathing animation
+            startTime = null
+            if (animationFrameId) cancelAnimationFrame(animationFrameId)
+            animationFrameId = requestAnimationFrame(animateStandingWave)
+          } else if (animationFrameId) {
+            // If we move away, pause animation to save CPU
+            cancelAnimationFrame(animationFrameId)
+          }
+        }
+
+        let rippleInterval
+
+        // Function to generate a single random ripple
+        function spawnQuantumRipple(container) {
+          const ripple = document.createElement('div')
+          ripple.classList.add('quantum-ripple')
+
+          // Depth randomization toggles (OFF by default).
+          // Flip any of these to `true` to experiment with the depth model.
+          // When all are `false`, the vortex uses the CSS fallback values (no extra randomness).
+          const ENABLE_DEPTH_SIZE = false // Randomly scales radius (near/far)
+          const ENABLE_DEPTH_BLUR = false // Near = sharper, far = blurrier
+          const ENABLE_DEPTH_CONTRAST = false // Near = higher contrast
+          const ENABLE_DEPTH_OPACITY = false // Near = more visible at the peak
+          const ENABLE_DEPTH_COLORS = false // Near = deeper/darker core + stronger highlights
+
+          // Randomize position across the slide
+          const x = Math.random() * 100
+          const y = Math.random() * 100
+          ripple.style.left = `${x}%`
+          ripple.style.top = `${y}%`
+
+          // Ripple base size (pixels)
+          const RIPPLE_SIZE_MIN_PX = 10 // minimum diameter
+          const RIPPLE_SIZE_JITTER_PX = 20 // random additional range (0..this)
+          // Randomize the base size for a softer, larger vortex (min..min+jitter)
+          const baseSize = RIPPLE_SIZE_MIN_PX + Math.random() * RIPPLE_SIZE_JITTER_PX
+          ripple.style.width = `${baseSize}px`
+          ripple.style.height = `${baseSize}px`
+
+          const enableDepth =
+            ENABLE_DEPTH_SIZE ||
+            ENABLE_DEPTH_BLUR ||
+            ENABLE_DEPTH_CONTRAST ||
+            ENABLE_DEPTH_OPACITY ||
+            ENABLE_DEPTH_COLORS
+
+          if (enableDepth) {
+            // Shared depth factor so all enabled properties feel coordinated.
+            // Depth range: 0.7 (far) .. 1.4 (near)
+            const depth = 0.7 + Math.random() * 0.7
+            const depthNormalized = (depth - 0.7) / 0.7 // 0..1
+
+            if (ENABLE_DEPTH_SIZE) {
+              const size = baseSize * depth
+              ripple.style.width = `${size}px`
+              ripple.style.height = `${size}px`
+            }
+
+            if (ENABLE_DEPTH_BLUR) {
+              const blur = 1.8 - depthNormalized * 0.7
+              ripple.style.setProperty('--vortex-blur', `${blur.toFixed(2)}px`)
+            }
+
+            if (ENABLE_DEPTH_CONTRAST) {
+              const contrast = 1.0 + depthNormalized * 0.22
+              ripple.style.setProperty('--vortex-contrast', contrast.toFixed(2))
+            }
+
+            if (ENABLE_DEPTH_OPACITY) {
+              const opacityMid = 0.35 + depthNormalized * 0.35
+              ripple.style.setProperty('--vortex-opacity-mid', opacityMid.toFixed(2))
+            }
+
+            if (ENABLE_DEPTH_COLORS) {
+              const core = 0.28 + depthNormalized * 0.18
+              const inner = 0.18 + depthNormalized * 0.08
+              const shadow = 0.18 + depthNormalized * 0.12
+              const highlight = 0.22 + depthNormalized * 0.08
+              const highlightStrong = 0.28 + depthNormalized * 0.1
+
+              ripple.style.setProperty('--vortex-core', core.toFixed(2))
+              ripple.style.setProperty('--vortex-inner', inner.toFixed(2))
+              ripple.style.setProperty('--vortex-shadow', shadow.toFixed(2))
+              ripple.style.setProperty('--vortex-highlight', highlight.toFixed(2))
+              ripple.style.setProperty('--vortex-highlight-strong', highlightStrong.toFixed(2))
+            }
+          }
+
+          // Ripple expansion timing (seconds)
+          const EXPAND_DURATION_BASE_SECONDS = 0.7 // minimum base duration before scaling
+          const EXPAND_DURATION_JITTER_SECONDS = 3 // random additional range (0..this)
+          const EXPAND_DURATION_MULTIPLIER = 1.0 // global slow-down multiplier
+
+          const expandDurationSeconds =
+            (EXPAND_DURATION_BASE_SECONDS + Math.random() * EXPAND_DURATION_JITTER_SECONDS) * EXPAND_DURATION_MULTIPLIER
+          ripple.style.setProperty('--expand-duration', `${expandDurationSeconds}s`)
+
+          // Add it to the screen
+          container.appendChild(ripple)
+
+          // Garbage collection: remove the DOM element after animation finishes
+          setTimeout(() => {
+            if (container.contains(ripple)) {
+              ripple.remove()
+            }
+          }, expandDurationSeconds * 1000)
+        }
+
+        const getRippleContainer = (slide) => {
+          if (!slide) return null
+
+          // Prefer the full-slide background layer when available
+          const background = document.querySelector('.reveal .slide-background.present')
+          let containerParent = slide
+          if (background) {
+            const backgroundContent = background.querySelector('.slide-background-content')
+            containerParent = backgroundContent || background
+          }
+
+          let container = containerParent.querySelector('.quantum-ripple-container')
+          if (!container) {
+            container = document.createElement('div')
+            container.classList.add('quantum-ripple-container')
+            containerParent.appendChild(container)
+          }
+
+          return container
+        }
+
+        const updateQuantumRipples = (slide) => {
+          // Clear old ripples if we leave the slide
+          clearInterval(rippleInterval)
+
+          if (!slide || !slide.classList.contains('chapter')) {
+            return
+          }
+
+          const startRipples = () => {
+            const container = getRippleContainer(slide)
+            if (!container) return
+
+            // Drop spawn rate controls
+            const INITIAL_DROP_COUNT = 10 // how many drops appear shortly after entering a cover slide
+            const INITIAL_DROP_SPREAD_MS = 2000 // spread those initial drops over 0..this window
+            const DROP_INTERVAL_MS = 90 // steady-state rate: one drop per interval
+
+            // 1. Spawn a couple of ripples immediately so the screen isn't empty
+            for (let i = 0; i < INITIAL_DROP_COUNT; i++) {
+              setTimeout(() => spawnQuantumRipple(container), Math.random() * INITIAL_DROP_SPREAD_MS)
+            }
+
+            // 2. Continuously spawn new ripples (e.g., one every 1.2 seconds)
+            rippleInterval = setInterval(() => {
+              const liveContainer = getRippleContainer(slide)
+              if (liveContainer) {
+                spawnQuantumRipple(liveContainer)
+              }
+            }, DROP_INTERVAL_MS)
+          }
+
+          // Delay to allow Reveal to finish background swaps during transitions
+          requestAnimationFrame(() => {
+            startRipples()
+            setTimeout(() => {
+              if (!rippleInterval) {
+                startRipples()
+              }
+            }, 120)
+          })
+        }
+
+        // Reveal.js event listener to start/stop the effect
+        Reveal.on('slidechanged', (event) => {
+          updateCoherentLattice(event.currentSlide)
+          updateQuantumRipples(event.currentSlide)
+        })
+
+        // Apply on initial load as well
+        updateCoherentLattice(Reveal.getCurrentSlide())
+        updateQuantumRipples(Reveal.getCurrentSlide())
       })
     </script>
   </body>
