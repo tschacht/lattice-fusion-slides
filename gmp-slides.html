@@ -69,6 +69,12 @@
         border-radius: 6px;
         right: 4em;
         bottom: 16px;
+        transition: opacity 200ms ease;
+      }
+      /* Hide the slide counter on chapter covers + the very first slide (JS toggles this class). */
+      .reveal.slide-number-hidden .slide-number {
+        opacity: 0;
+        pointer-events: none;
       }
       /* Footnote styling */
       .footnote {
@@ -1418,6 +1424,28 @@
         updateShortcutLegendVisibility(current)
       }
 
+      const updateSlideNumberVisibility = (slide) => {
+        const revealEl = document.querySelector('.reveal')
+        if (!revealEl) return
+
+        // Reveal's current slide can be temporarily null during startup.
+        const resolvedSlide =
+          slide || Reveal.getCurrentSlide() || document.querySelector('.reveal .slides section.present')
+        if (!resolvedSlide) return
+
+        const indices = Reveal.getIndices(resolvedSlide)
+        const h = Number.isFinite(indices.h) ? indices.h : 0
+        const v = Number.isFinite(indices.v) ? indices.v : 0
+        const isFirstSlide = h === 0 && v === 0
+        const isChapter = resolvedSlide.classList.contains('chapter')
+
+        // Requested behavior:
+        // - hide on all chapter/cover slides
+        // - hide on the very first slide (h=0,v=0) even if it isn't a chapter cover
+        const shouldHide = isFirstSlide || isChapter
+        revealEl.classList.toggle('slide-number-hidden', shouldHide)
+      }
+
       Reveal.on('ready', () => {
         addUndimTriggers()
         const revealEl = document.querySelector('.reveal')
@@ -1426,8 +1454,13 @@
         }
         updateQuantumEffectClasses()
         updateShortcutLegend()
-        updateShortcutLegendVisibility(Reveal.getCurrentSlide())
+        const currentSlide = Reveal.getCurrentSlide()
+        updateShortcutLegendVisibility(currentSlide)
+        updateSlideNumberVisibility(currentSlide)
         updateShortcutLegendPosition()
+
+        // Ensure the slide counter is hidden on the initial slide after Reveal has finished laying out UI.
+        setTimeout(() => updateSlideNumberVisibility(), 0)
       })
 
       Reveal.on('fragmentshown', (event) => {
@@ -1446,6 +1479,7 @@
         const trigger = event.currentSlide ? event.currentSlide.querySelector('.undim-trigger.visible') : null
         setUndimState(event.currentSlide, Boolean(trigger))
         updateShortcutLegendVisibility(event.currentSlide)
+        updateSlideNumberVisibility(event.currentSlide)
         updateShortcutLegendPosition()
       })
 
