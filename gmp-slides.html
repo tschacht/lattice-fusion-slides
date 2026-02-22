@@ -319,7 +319,8 @@
       /* The class that triggers the Vector Potential distortion */
       .coherent-lattice-active {
         /* Apply the invisible SVG math to the whole slide */
-        filter: url('#vector-potential');
+        filter: url(#vector-potential);
+        -webkit-filter: url(#vector-potential);
 
         /* Optional: slightly scale up to prevent edges from pulling inward during distortion */
         transform: scale(1.02);
@@ -1233,7 +1234,11 @@
     </div>
 
     <!-- The Vector Potential Standing Wave Filter -->
-    <svg style="display: none">
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      style="position: absolute; width: 0; height: 0; overflow: hidden; left: -9999px; top: -9999px"
+    >
       <filter id="vector-potential" x="-20%" y="-20%" width="140%" height="140%">
         <!-- Generate a low-frequency, fluid-like mathematical lattice structure -->
         <feTurbulence type="fractalNoise" baseFrequency="0.015 0.02" numOctaves="2" result="quantum_field" />
@@ -1491,12 +1496,10 @@
         const amplitudeEl = document.getElementById('wave-amplitude')
         let animationFrameId
         let startTime = null
-        let amplitudeMod = 1
-        let amplitudeModTarget = 1
-        let lastAmplitudeUpdate = 0
-        let phaseDrift = 0
-        let phaseDriftTarget = 0
-        let lastPhaseUpdate = 0
+        const amplitudePhasePrimary = Math.random() * Math.PI * 2
+        const amplitudePhaseSecondary = Math.random() * Math.PI * 2
+        const phaseDriftPhasePrimary = Math.random() * Math.PI * 2
+        const phaseDriftPhaseSecondary = Math.random() * Math.PI * 2
         const microWavePhase = Math.random() * Math.PI * 2
 
         // The mathematical temporal oscillation of the standing wave
@@ -1510,25 +1513,26 @@
           const WAVE_SCALE_PX = 7
           const WAVE_PERIOD_MS = 3000
 
-          // Randomized amplitude modulation (slow, smooth breathing variation).
-          const AMPLITUDE_MOD_RANGE = 0.35 // +/- 35% of base amplitude. Set to 0 to disable amplitude modulation.
-          const AMPLITUDE_MOD_UPDATE_MS = 1200
-          const AMPLITUDE_MOD_EASE = 0.03 // higher = faster chase toward random target
-          if (elapsed - lastAmplitudeUpdate > AMPLITUDE_MOD_UPDATE_MS) {
-            lastAmplitudeUpdate = elapsed
-            amplitudeModTarget = 1 + (Math.random() * 2 - 1) * AMPLITUDE_MOD_RANGE
-          }
-          amplitudeMod += (amplitudeModTarget - amplitudeMod) * AMPLITUDE_MOD_EASE
+          // Continuous noise modulation (smooth, never snaps).
+          const AMPLITUDE_MOD_RANGE = 0.22 // Primary amplitude wobble (set to 0 to disable modulation).
+          const AMPLITUDE_MOD_PERIOD_MS = 6200
+          const AMPLITUDE_MOD_SECONDARY_RANGE = 0.13 // Secondary wobble (set to 0 to disable modulation).
+          const AMPLITUDE_MOD_SECONDARY_PERIOD_MS = 11200
+          const amplitudeMod =
+            1 +
+            AMPLITUDE_MOD_RANGE * Math.sin(amplitudePhasePrimary + (elapsed / AMPLITUDE_MOD_PERIOD_MS) * Math.PI * 2) +
+            AMPLITUDE_MOD_SECONDARY_RANGE *
+              Math.sin(amplitudePhaseSecondary + (elapsed / AMPLITUDE_MOD_SECONDARY_PERIOD_MS) * Math.PI * 2)
 
-          // Randomized phase drift (keeps timing intact but adds slight organic wander).
-          const PHASE_DRIFT_RANGE = 0.45 // Radians. Set to 0 to disable phase drift.
-          const PHASE_DRIFT_UPDATE_MS = 1500
-          const PHASE_DRIFT_EASE = 0.02
-          if (elapsed - lastPhaseUpdate > PHASE_DRIFT_UPDATE_MS) {
-            lastPhaseUpdate = elapsed
-            phaseDriftTarget = (Math.random() * 2 - 1) * PHASE_DRIFT_RANGE
-          }
-          phaseDrift += (phaseDriftTarget - phaseDrift) * PHASE_DRIFT_EASE
+          // Continuous phase drift (keeps timing intact but adds organic wander).
+          const PHASE_DRIFT_RANGE = 0.3 // Radians (set to 0 to disable phase drift).
+          const PHASE_DRIFT_PERIOD_MS = 7400
+          const PHASE_DRIFT_SECONDARY_RANGE = 0.15 // Radians (set to 0 to disable phase drift).
+          const PHASE_DRIFT_SECONDARY_PERIOD_MS = 13200
+          const phaseDrift =
+            PHASE_DRIFT_RANGE * Math.sin(phaseDriftPhasePrimary + (elapsed / PHASE_DRIFT_PERIOD_MS) * Math.PI * 2) +
+            PHASE_DRIFT_SECONDARY_RANGE *
+              Math.sin(phaseDriftPhaseSecondary + (elapsed / PHASE_DRIFT_SECONDARY_PERIOD_MS) * Math.PI * 2)
 
           // Micro-wave texture layer (fixed period, random start phase for variation per load).
           const MICRO_WAVE_AMPLITUDE_PX = 1.6 // Set to 0 to disable the micro-wave layer.
