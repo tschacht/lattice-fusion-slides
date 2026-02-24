@@ -70,6 +70,9 @@
         right: 4em;
         bottom: 16px;
         transition: opacity 200ms ease;
+        min-width: calc(5ch + 20px);
+        text-align: center;
+        box-sizing: border-box;
       }
       /* Hide the slide counter on chapter covers + the very first slide (JS toggles this class). */
       .reveal.slide-number-hidden .slide-number {
@@ -861,26 +864,26 @@
           </h2>
           <p>To understand how a metal lattice survives a nuclear blast, we must define this synchronized state.</p>
           <ul>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>Asynchronous Reality:</strong> Normally, atoms absorb and emit energy independently and randomly.
               Think of a standard lightbulb, or millions of independent, asynchronous threads executing code on a
               server. The energy output scales linearly (<span>\( N \)</span>).
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>The Dicke Effect (Superradiance):</strong> In 1954, physicist Robert Dicke proved that if atoms
               are packed tightly enough (like inside a dense Titanium crystal), they couple to the exact same
               electromagnetic field.
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>Synchronous Execution:</strong> When this happens, the atoms merge their quantum states. Instead
               of millions of independent threads, they lock into a single, perfectly synchronized execution loop.
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>The Scaling Factor:</strong> They stop acting as billions of individual atoms and act as one giant
               "macro-atom." Their ability to emit or absorb energy suddenly scales exponentially (<span>\( N^2 \)</span
               >).
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>The Result:</strong> This massive collective synchronization is what gives the lattice the
               capacity to instantly swallow a 24 MeV energy spike.
             </li>
@@ -895,23 +898,23 @@
             The actual "magic" engine
           </h2>
           <ul>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>Asynchronous Reality:</strong> Normally, atoms act like independent, isolated threads. Their
               energy capacity scales linearly (<span>\( N \)</span>).
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>The Synchronization:</strong> In a dense, structured lattice, atoms can couple to the exact same
               electromagnetic field, locking into perfect phase.
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>The "Macro-Atom":</strong> They stop behaving as billions of individual particles and merge into a
               single, unified quantum execution loop.
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>Exponential Scaling:</strong> Because they are perfectly synchronized, their capacity to absorb
               and emit energy suddenly scales exponentially (<span>\( N^2 \)</span>).
             </li>
-            <li>
+            <li class="fragment fade-in-then-semi-out">
               <strong>The Payoff:</strong> This massive parallel synchronization is the only mechanism that allows a
               physical crystal to instantly swallow a 24 MeV nuclear spike without vaporizing.
             </li>
@@ -1573,15 +1576,17 @@
       }
 
       const updateShortcutLegendPosition = () => {
-        const legend = document.querySelector('.shortcut-legend')
-        const slideNumber = document.querySelector('.reveal .slide-number')
-        if (!legend || !slideNumber) return
-        const rect = slideNumber.getBoundingClientRect()
-        const gap = 8
-        const right = Math.max(window.innerWidth - rect.left + gap, 40)
-        const bottom = Math.max(window.innerHeight - rect.bottom, 10)
-        legend.style.setProperty('--legend-right', `${right}px`)
-        legend.style.setProperty('--legend-bottom', `${bottom}px`)
+        setTimeout(() => {
+          const legend = document.querySelector('.shortcut-legend')
+          const slideNumber = document.querySelector('.reveal .slide-number')
+          if (!legend || !slideNumber) return
+          const rect = slideNumber.getBoundingClientRect()
+          const gap = 8
+          const right = Math.max(window.innerWidth - rect.left + gap, 40)
+          const bottom = Math.max(window.innerHeight - rect.bottom, 10)
+          legend.style.setProperty('--legend-right', `${right}px`)
+          legend.style.setProperty('--legend-bottom', `${bottom}px`)
+        }, 0)
       }
 
       const toggleFragments = () => {
