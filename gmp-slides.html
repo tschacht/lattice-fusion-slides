@@ -1487,25 +1487,15 @@
           if (fragments.length === 0) return
           if (section.querySelector('.undim-trigger')) return
 
-          let maxIndex = -1
-          fragments.forEach((fragment) => {
-            const rawIndex = fragment.getAttribute('data-fragment-index')
-            if (rawIndex === null) return
-            const parsedIndex = Number.parseInt(rawIndex, 10)
-            if (!Number.isNaN(parsedIndex)) {
-              maxIndex = Math.max(maxIndex, parsedIndex)
-            }
-          })
-
           const trigger = document.createElement('span')
           trigger.className = 'fragment undim-trigger'
           trigger.setAttribute('data-undim', 'true')
           trigger.style.display = 'none'
-          if (maxIndex >= 0) {
-            trigger.setAttribute('data-fragment-index', String(maxIndex + 1))
-          }
           section.appendChild(trigger)
         })
+        if (typeof Reveal.sync === 'function') {
+          Reveal.sync()
+        }
       }
 
       const setUndimState = (section, enabled) => {
@@ -1602,6 +1592,13 @@
           revealEl.classList.toggle('fragments-off', enabled)
         }
         updateShortcutLegend()
+
+        // Sync undim state for current slide in case Reveal didn't fire events
+        const currentSlide = Reveal.getCurrentSlide()
+        if (currentSlide) {
+          const trigger = currentSlide.querySelector('.undim-trigger.visible')
+          setUndimState(currentSlide, Boolean(trigger))
+        }
       }
 
       let quantumLegendVisible = false
@@ -1652,14 +1649,18 @@
       })
 
       Reveal.on('fragmentshown', (event) => {
-        if (event.fragment && event.fragment.hasAttribute('data-undim')) {
-          setUndimState(event.fragment.closest('section'), true)
+        const frags = event.fragments || [event.fragment]
+        const undimFrag = Array.from(frags).find((f) => f && f.hasAttribute('data-undim'))
+        if (undimFrag) {
+          setUndimState(undimFrag.closest('section'), true)
         }
       })
 
       Reveal.on('fragmenthidden', (event) => {
-        if (event.fragment && event.fragment.hasAttribute('data-undim')) {
-          setUndimState(event.fragment.closest('section'), false)
+        const frags = event.fragments || [event.fragment]
+        const undimFrag = Array.from(frags).find((f) => f && f.hasAttribute('data-undim'))
+        if (undimFrag) {
+          setUndimState(undimFrag.closest('section'), false)
         }
       })
 
