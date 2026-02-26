@@ -11,9 +11,15 @@
     <!-- Theme -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/sky.min.css" />
 
+    <!-- CIA Google Fonts Fallback for rounded monospace font (theme does not import it) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sono:wght@400;700&display=swap" />
+
     <!-- Alternative primary Font Source (bypasses CIA Google Fonts/Gstatic issues) -->
     <!-- Browser naturally falls back to the theme's Google Fonts if this fails. -->
-    <link rel="stylesheet" href="https://fonts.bunny.net/css?family=quicksand:400,700|open-sans:400,400i,700,700i" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.bunny.net/css?family=quicksand:400,700|open-sans:400,400i,700,700i|sono:400,700"
+    />
 
     <!-- MathJax for rendering LaTeX formulas -->
     <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?version=4.8.0&features=es7%2Ces6"></script>
@@ -32,6 +38,9 @@
       }
       .reveal h3 {
         font-size: 1.2em;
+      }
+      .reveal code {
+        font-family: 'Sono', monospace;
       }
       .highlight {
         color: rgb(250, 189, 46);
