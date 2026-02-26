@@ -385,10 +385,8 @@
         box-shadow:
           inset 0 0 18px rgba(0, 0, 0, 0.28),
           0 0 14px rgba(255, 255, 255, 0.08);
-        filter: blur(calc(var(--vortex-blur, 1.3px) + var(--wobble-blur-fast, 0px) + var(--wobble-blur-slow, 0px)))
-          saturate(1.25)
-          contrast(calc(var(--vortex-contrast, 1.12) + var(--wobble-contrast-fast, 0) + var(--wobble-contrast-slow, 0)))
-          brightness(calc(1 + ((var(--wobble-contrast-fast, 0) + var(--wobble-contrast-slow, 0)) * 0.6)));
+        /* Static filter: Animating CSS filters per-pixel on many elements destroys framerates */
+        filter: blur(var(--vortex-blur, 1.3px)) saturate(1.25) contrast(var(--vortex-contrast, 1.12));
         -webkit-mask: radial-gradient(
           circle,
           rgba(0, 0, 0, 0) 28%,
@@ -586,6 +584,27 @@
         50% {
           rotate: var(--precession-amount, 0deg);
         }
+      }
+
+      /* Ambient background on normal slides */
+      .ambient-gradient-bg {
+        position: absolute;
+        inset: 0;
+        background-image: linear-gradient(135deg, #fb8d80 0%, #42a5f5 40%, #42a5f5 60%, #857fda 100%);
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        z-index: -1;
+      }
+      .reveal.effect-ambient .ambient-gradient-bg {
+        opacity: 0.28;
+      }
+      .quantum-ripple-container.ambient-mode {
+        --vortex-opacity-mid: 0;
+        --vortex-opacity-start: 0;
+        --vortex-opacity-end: 0;
+      }
+      .reveal.effect-ambient .quantum-ripple-container.ambient-mode {
+        --vortex-opacity-mid: 0.45;
       }
     </style>
   </head>
@@ -1360,6 +1379,15 @@
         </div>
         <div
           class="shortcut-item"
+          data-shortcut="ambient"
+          data-scope="normal"
+          data-tooltip="press a to toggle ambient mode"
+        >
+          <span class="shortcut-key">a</span>
+          <span class="shortcut-label">ambient</span>
+        </div>
+        <div
+          class="shortcut-item"
           data-shortcut="shimmer"
           data-scope="chapter"
           data-tooltip="press 1 to toggle phase shimmer"
@@ -1425,17 +1453,19 @@
 
     <script>
       const applyChapterBackgrounds = () => {
-        const chapters = document.querySelectorAll('.reveal .slides section.chapter')
-        chapters.forEach((section) => {
-          // Base: black
-          section.setAttribute('data-background-color', '#000')
-          section.setAttribute(
-            'data-background-gradient',
-            // Gradient: salmon -> headline -> lilac
-            'linear-gradient(135deg, #fb8d80 0%, #42a5f5 40%, #42a5f5 60%, #857fda 100%)'
-            //'linear-gradient(135deg, #fb8d80 0%, #000 40%, #000 60%, #857fda 100%)'
-            //'linear-gradient(135deg, #071a2b 0%, #1a0730 55%, #0b3a3a 100%)'
-          )
+        const sections = document.querySelectorAll('.reveal .slides > section')
+        sections.forEach((section, index) => {
+          if (index === 0) return // Skip title slide
+
+          if (section.classList.contains('chapter')) {
+            // Base: black
+            section.setAttribute('data-background-color', '#000')
+            section.setAttribute(
+              'data-background-gradient',
+              // Gradient: salmon -> headline -> lilac
+              'linear-gradient(135deg, #fb8d80 0%, #42a5f5 40%, #42a5f5 60%, #857fda 100%)'
+            )
+          }
         })
       }
 
@@ -1449,6 +1479,7 @@
         center: true,
         hash: true,
         keyboard: {
+          65: () => toggleAmbientMode(), // a
           85: () => toggleFragments(), // u
           49: () => toggleQuantumEffect('shimmer'), // 1
           50: () => toggleQuantumEffect('speckle'), // 2
@@ -1486,6 +1517,20 @@
         } else {
           section.classList.remove('undim')
         }
+      }
+
+      // Ambient mode state for normal slides
+      let ambientMode = false
+
+      const toggleAmbientMode = () => {
+        ambientMode = !ambientMode
+        const revealEl = document.querySelector('.reveal')
+        if (revealEl) {
+          revealEl.classList.toggle('effect-ambient', ambientMode)
+        }
+        updateShortcutLegend()
+        // Dispatch event so that updateCoherentLattice (defined inside DOMContentLoaded) can react
+        document.dispatchEvent(new CustomEvent('toggleAmbient'))
       }
 
       // Quantum effect toggles (default OFF). Flip these or use keys 1-4.
@@ -1530,6 +1575,11 @@
           if (!item) return
           item.classList.toggle('is-on', Boolean(quantumEffects[key]))
         })
+
+        const ambientItem = document.querySelector('.shortcut-item[data-shortcut="ambient"]')
+        if (ambientItem) {
+          ambientItem.classList.toggle('is-on', ambientMode)
+        }
       }
 
       const updateShortcutLegendVisibility = (section) => {
@@ -1537,6 +1587,7 @@
         if (!legend) return
         const hasFragments = Boolean(section && section.querySelector('.fragment'))
         const isChapter = Boolean(section && section.classList.contains('chapter'))
+        const isTitle = section === document.querySelector('.reveal .slides > section:first-child')
 
         const fragmentItem = legend.querySelector('.shortcut-item[data-shortcut="fragments"]')
         if (fragmentItem) {
@@ -1548,8 +1599,15 @@
           item.classList.toggle('is-hidden', !isChapter)
         })
 
+        const normalItems = legend.querySelectorAll('.shortcut-item[data-scope="normal"]')
+        normalItems.forEach((item) => {
+          item.classList.toggle('is-hidden', isChapter || isTitle)
+        })
+
         const showChapterLegend = isChapter && quantumLegendVisible
-        legend.classList.toggle('is-hidden', !hasFragments && !showChapterLegend)
+        const showNormalLegend = !isChapter && !isTitle
+
+        legend.classList.toggle('is-hidden', !hasFragments && !showChapterLegend && !showNormalLegend)
         legend.classList.toggle('is-hidden-by-user', isChapter && !quantumLegendVisible)
       }
 
@@ -1663,6 +1721,7 @@
         const amplitudeEl = document.getElementById('wave-amplitude')
         let animationFrameId
         let startTime = null
+        let lastSvgFrameTime = 0
         const amplitudePhasePrimary = Math.random() * Math.PI * 2
         const amplitudePhaseSecondary = Math.random() * Math.PI * 2
         const phaseDriftPhasePrimary = Math.random() * Math.PI * 2
@@ -1710,31 +1769,49 @@
           const mainWave = Math.sin(elapsed / WAVE_PERIOD_MS + phaseDrift)
           const currentScale = WAVE_SCALE_PX * amplitudeMod * mainWave + microWave
 
-          amplitudeEl.setAttribute('scale', currentScale)
+          // Throttle expensive SVG attribute writes to ~30fps
+          if (timestamp - lastSvgFrameTime > 33) {
+            amplitudeEl.setAttribute('scale', currentScale)
+            lastSvgFrameTime = timestamp
+          }
 
           animationFrameId = requestAnimationFrame(animateStandingWave)
         }
 
         const updateCoherentLattice = (slide) => {
-          // Clean up: make sure the filter class is removed from previous slides
+          // Clean up: make sure the filter class is removed from previous slides,
+          // including h1/h2/h3 nodes that had it applied during ambient mode
           document.querySelectorAll('.coherent-lattice-active').forEach((el) => {
             el.classList.remove('coherent-lattice-active')
           })
 
           let shouldAnimate = false
           if (slide) {
+            const isTitle = slide === document.querySelector('.reveal .slides > section:first-child')
             const targets = slide.querySelectorAll('.coherent-lattice-target')
+
             if (targets.length > 0) {
               targets.forEach((el) => {
                 el.classList.add('coherent-lattice-active')
               })
               shouldAnimate = true
-            } else if (slide.classList.contains('chapter')) {
-              // Fall back to full-slide effect for chapter covers
-              slide.classList.add('coherent-lattice-active')
+            }
+
+            if (!isTitle) {
+              const isChapter = slide.classList.contains('chapter')
               const background = document.querySelector('.reveal .slide-background.present')
-              if (background) {
+              const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+
+              if (background && (isChapter || isAmbient)) {
                 background.classList.add('coherent-lattice-active')
+              }
+              if (isChapter) {
+                slide.classList.add('coherent-lattice-active')
+              } else if (isAmbient) {
+                // Apply wobble to headings on normal text slides so body text remains readable
+                slide.querySelectorAll('h1, h2, h3').forEach((h) => {
+                  h.classList.add('coherent-lattice-active')
+                })
               }
               shouldAnimate = true
             }
@@ -1743,6 +1820,7 @@
           if (shouldAnimate) {
             // Start the meditative breathing animation
             startTime = null
+            lastSvgFrameTime = 0
             if (animationFrameId) cancelAnimationFrame(animationFrameId)
             animationFrameId = requestAnimationFrame(animateStandingWave)
           } else if (animationFrameId) {
@@ -1865,6 +1943,13 @@
           if (!container) {
             container = document.createElement('div')
             container.classList.add('quantum-ripple-container')
+            // Dim ripples heavily on normal text slides so they do not overpower content
+            if (!slide.classList.contains('chapter')) {
+              container.classList.add('ambient-mode')
+              const bg = document.createElement('div')
+              bg.classList.add('ambient-gradient-bg')
+              container.appendChild(bg)
+            }
             containerParent.appendChild(container)
           }
 
@@ -1875,9 +1960,17 @@
           // Clear old ripples if we leave the slide
           clearInterval(rippleInterval)
 
-          if (!slide || !slide.classList.contains('chapter')) {
+          if (!slide) {
             return
           }
+
+          const isTitle = slide === document.querySelector('.reveal .slides > section:first-child')
+          const isChapter = slide.classList.contains('chapter')
+          const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+
+          // Stop completely if this slide should not have ripples
+          if (isTitle) return
+          if (!isChapter && !isAmbient) return
 
           const startRipples = () => {
             const container = getRippleContainer(slide)
@@ -1885,8 +1978,8 @@
 
             // Drop spawn rate controls
             const INITIAL_DROP_COUNT = 10 // how many drops appear shortly after entering a cover slide
-            const INITIAL_DROP_SPREAD_MS = 2000 // spread those initial drops over 0..this window
-            const DROP_INTERVAL_MS = 90 // steady-state rate: one drop per interval
+            const INITIAL_DROP_SPREAD_MS = 1000 // spread those initial drops over 0..this window
+            const DROP_INTERVAL_MS = 200 // steady-state rate: one drop per interval
 
             // 1. Spawn a couple of ripples immediately so the screen isn't empty
             for (let i = 0; i < INITIAL_DROP_COUNT; i++) {
@@ -1917,6 +2010,34 @@
         Reveal.on('slidechanged', (event) => {
           updateCoherentLattice(event.currentSlide)
           updateQuantumRipples(event.currentSlide)
+        })
+
+        // Listen for the custom ambient toggle event
+        document.addEventListener('toggleAmbient', () => {
+          const slide = Reveal.getCurrentSlide()
+          const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+
+          if (!isAmbient) {
+            // Aggressive cleanup: remove wobble classes from normal slides immediately
+            document.querySelectorAll('.coherent-lattice-active').forEach((el) => {
+              // Keep it on chapter backgrounds, remove from normal slide headers
+              if (el.tagName.match(/^H[1-3]$/i)) {
+                el.classList.remove('coherent-lattice-active')
+              }
+            })
+            // Also clear any injected quantum ripple containers from normal slides
+            document.querySelectorAll('section:not(.chapter) .quantum-ripple-container').forEach((c) => {
+              c.remove()
+            })
+            // Also remove the class from the slide-background if it's a normal slide
+            const bg = document.querySelector('.reveal .slide-background.present')
+            if (bg && slide && !slide.classList.contains('chapter')) {
+              bg.classList.remove('coherent-lattice-active')
+            }
+          }
+
+          updateCoherentLattice(slide)
+          updateQuantumRipples(slide)
         })
 
         // Apply on initial load as well
