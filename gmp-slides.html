@@ -407,7 +407,7 @@
         opacity: 0;
         /* Slower, smoother expansion */
         animation:
-          expandRipple var(--expand-duration, 8s) cubic-bezier(0.2, 0.6, 0.2, 1) forwards,
+          expandRipple var(--expand-duration, 8s) var(--expand-easing, cubic-bezier(0.2, 0.6, 0.2, 1)) forwards,
           rippleWobbleFast var(--wobble-fast-duration, 0.1s) ease-in-out infinite,
           rippleWobbleSlow var(--wobble-slow-duration, 0.6s) ease-in-out infinite,
           rippleWobbleEcho var(--wobble-echo-duration, 1s) ease-out infinite,
@@ -603,8 +603,31 @@
         --vortex-opacity-start: 0;
         --vortex-opacity-end: 0;
       }
+      .quantum-ripple-container.ambient-mode.debug-visible {
+        --vortex-opacity-mid: 0.45;
+      }
       .reveal.effect-ambient .quantum-ripple-container.ambient-mode {
         --vortex-opacity-mid: 0.45;
+      }
+      .vortex-debug-hud {
+        position: fixed;
+        left: 14px;
+        top: 14px;
+        z-index: 120;
+        pointer-events: none;
+        background: rgba(8, 10, 16, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
+        padding: 8px 10px;
+        min-width: 240px;
+        font-family: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, Consolas, monospace;
+        font-size: 11px;
+        line-height: 1.35;
+        color: #eaf3ff;
+        white-space: pre-line;
+      }
+      .vortex-debug-hud.is-hidden {
+        display: none;
       }
     </style>
   </head>
@@ -2083,8 +2106,8 @@
       </div>
 
       <div class="shortcut-legend" aria-label="Presentation shortcuts">
-        <div class="shortcut-item is-on" data-shortcut="fragments" data-tooltip="press u to toggle fragments reveal">
-          <span class="shortcut-key">u</span>
+        <div class="shortcut-item is-on" data-shortcut="fragments" data-tooltip="press s to toggle fragments reveal">
+          <span class="shortcut-key">s</span>
           <span class="shortcut-label">fragments</span>
         </div>
         <div
@@ -2120,7 +2143,6 @@
           data-scope="chapter"
           data-tooltip="press 3 to toggle micro wobble"
         >
-          <!-- !!TODO: is this working after perf opt? -->
           <span class="shortcut-key">3</span>
           <span class="shortcut-label">micro wobble</span>
         </div>
@@ -2132,6 +2154,18 @@
         >
           <span class="shortcut-key">4</span>
           <span class="shortcut-label">vortex precession</span>
+        </div>
+        <div
+          class="shortcut-item"
+          data-shortcut="debug"
+          data-tooltip="press d to toggle deterministic vortex debug mode"
+        >
+          <span class="shortcut-key">d</span>
+          <span class="shortcut-label">debug</span>
+        </div>
+        <div class="shortcut-item" data-shortcut="hud" data-tooltip="press x to toggle debug HUD">
+          <span class="shortcut-key">x</span>
+          <span class="shortcut-label">hud</span>
         </div>
       </div>
     </div>
@@ -2191,7 +2225,9 @@
         hash: true,
         keyboard: {
           65: () => toggleAmbientMode(), // a
-          85: () => toggleFragments(), // u
+          68: () => toggleVortexDebugMode(), // d
+          88: () => toggleDebugHudMode(), // x
+          83: () => toggleFragments(), // s
           49: () => toggleQuantumEffect('shimmer'), // 1
           50: () => toggleQuantumEffect('speckle'), // 2
           51: () => toggleQuantumEffect('wobble'), // 3
@@ -2232,6 +2268,12 @@
 
       // Ambient mode state for normal slides
       let ambientMode = false
+      let vortexDebugMode = false
+      let debugHudEnabled = false
+      const VORTEX_DEBUG_MARGIN_PX = 200
+      const VORTEX_DEBUG_DURATION_SECONDS = 5
+      const VORTEX_DEBUG_RESPAWN_GAP_MS = 100
+      const VORTEX_DEBUG_MIN_RADIUS_PX = 100
 
       const toggleAmbientMode = () => {
         ambientMode = !ambientMode
@@ -2242,6 +2284,18 @@
         updateShortcutLegend()
         // Dispatch event so that updateCoherentLattice (defined inside DOMContentLoaded) can react
         document.dispatchEvent(new CustomEvent('toggleAmbient'))
+      }
+
+      const toggleVortexDebugMode = () => {
+        vortexDebugMode = !vortexDebugMode
+        updateShortcutLegend()
+        document.dispatchEvent(new CustomEvent('toggleVortexDebug'))
+      }
+
+      const toggleDebugHudMode = () => {
+        debugHudEnabled = !debugHudEnabled
+        updateShortcutLegend()
+        document.dispatchEvent(new CustomEvent('toggleDebugHud'))
       }
 
       // Quantum effect toggles (default OFF). Flip these or use keys 1-4.
@@ -2290,6 +2344,16 @@
         const ambientItem = document.querySelector('.shortcut-item[data-shortcut="ambient"]')
         if (ambientItem) {
           ambientItem.classList.toggle('is-on', ambientMode)
+        }
+
+        const debugItem = document.querySelector('.shortcut-item[data-shortcut="debug"]')
+        if (debugItem) {
+          debugItem.classList.toggle('is-on', vortexDebugMode)
+        }
+
+        const hudItem = document.querySelector('.shortcut-item[data-shortcut="hud"]')
+        if (hudItem) {
+          hudItem.classList.toggle('is-on', debugHudEnabled)
         }
       }
 
@@ -2489,6 +2553,17 @@
           animationFrameId = requestAnimationFrame(animateStandingWave)
         }
 
+        const isTitleSlide = (slide) => slide === document.querySelector('.reveal .slides > section:first-child')
+
+        const isVisualSvgSlide = (slide) => Boolean(slide && slide.querySelector('svg.r-stretch'))
+
+        const isAmbientEligibleSlide = (slide) => {
+          if (!slide) return false
+          if (isTitleSlide(slide)) return false
+          if (slide.classList.contains('chapter')) return false
+          return true
+        }
+
         const updateCoherentLattice = (slide) => {
           // Clean up: make sure the filter class is removed from previous slides,
           // including h1/h2/h3 nodes that had it applied during ambient mode
@@ -2498,8 +2573,11 @@
 
           let shouldAnimate = false
           if (slide) {
-            const isTitle = slide === document.querySelector('.reveal .slides > section:first-child')
             const targets = slide.querySelectorAll('.coherent-lattice-target')
+            const isChapter = slide.classList.contains('chapter')
+            const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+            const canUseAmbient = isAmbient && isAmbientEligibleSlide(slide)
+            const background = document.querySelector('.reveal .slide-background.present')
 
             if (targets.length > 0) {
               targets.forEach((el) => {
@@ -2508,22 +2586,20 @@
               shouldAnimate = true
             }
 
-            if (!isTitle) {
-              const isChapter = slide.classList.contains('chapter')
-              const background = document.querySelector('.reveal .slide-background.present')
-              const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
-
-              if (background && (isChapter || isAmbient)) {
+            if (isChapter) {
+              if (background) {
                 background.classList.add('coherent-lattice-active')
               }
-              if (isChapter) {
-                slide.classList.add('coherent-lattice-active')
-              } else if (isAmbient) {
-                // Apply wobble to headings on normal text slides so body text remains readable
-                slide.querySelectorAll('h1, h2, h3').forEach((h) => {
-                  h.classList.add('coherent-lattice-active')
-                })
+              slide.classList.add('coherent-lattice-active')
+              shouldAnimate = true
+            } else if (canUseAmbient) {
+              if (background) {
+                background.classList.add('coherent-lattice-active')
               }
+              // Apply wobble to headings on normal text slides so body text remains readable
+              slide.querySelectorAll('h1, h2, h3').forEach((h) => {
+                h.classList.add('coherent-lattice-active')
+              })
               shouldAnimate = true
             }
           }
@@ -2537,15 +2613,126 @@
           } else if (animationFrameId) {
             // If we move away, pause animation to save CPU
             cancelAnimationFrame(animationFrameId)
+            animationFrameId = null
           }
         }
 
         let rippleInterval
+        let rippleStartFrameId
+        let rippleRestartTimeoutId
+        const rippleSpawnTimeouts = new Set()
+        let rippleGeneration = 0
+        let debugHudEl
+        let debugHudInterval
+
+        const clearQuantumRippleScheduling = () => {
+          rippleGeneration += 1
+          if (rippleInterval) {
+            clearInterval(rippleInterval)
+            rippleInterval = null
+          }
+          if (rippleStartFrameId) {
+            cancelAnimationFrame(rippleStartFrameId)
+            rippleStartFrameId = null
+          }
+          if (rippleRestartTimeoutId) {
+            clearTimeout(rippleRestartTimeoutId)
+            rippleRestartTimeoutId = null
+          }
+          rippleSpawnTimeouts.forEach((id) => {
+            clearTimeout(id)
+          })
+          rippleSpawnTimeouts.clear()
+          updateDebugHud()
+        }
+
+        const getSlideKind = (slide) => {
+          if (!slide) return 'none'
+          if (isTitleSlide(slide)) return 'title'
+          if (slide.classList.contains('chapter')) return 'chapter'
+          if (isVisualSvgSlide(slide)) return 'visual-svg'
+          return 'text'
+        }
+
+        const ensureDebugHud = () => {
+          if (debugHudEl && document.body.contains(debugHudEl)) return debugHudEl
+          const hud = document.createElement('div')
+          hud.className = 'vortex-debug-hud is-hidden'
+          hud.setAttribute('aria-live', 'polite')
+          hud.setAttribute('aria-hidden', 'true')
+          document.body.appendChild(hud)
+          debugHudEl = hud
+          return debugHudEl
+        }
+
+        const updateDebugHud = () => {
+          const hud = ensureDebugHud()
+          if (!debugHudEnabled) {
+            hud.classList.add('is-hidden')
+            hud.setAttribute('aria-hidden', 'true')
+            return
+          }
+
+          const currentSlide = Reveal.getCurrentSlide()
+          const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+          const isChapter = Boolean(currentSlide && currentSlide.classList.contains('chapter'))
+          const isAmbientEligible = isAmbientEligibleSlide(currentSlide)
+          const forceDebugOnTextSlide = Boolean(vortexDebugMode && currentSlide && !isChapter && isAmbientEligible)
+          const canSpawnRipples = Boolean(isChapter || (isAmbient && isAmbientEligible) || forceDebugOnTextSlide)
+          const kind = getSlideKind(currentSlide)
+          const h = currentSlide ? currentSlide.querySelectorAll('h1, h2, h3').length : 0
+          const activeRipples = document.querySelectorAll('.quantum-ripple').length
+          const activeContainers = document.querySelectorAll('.quantum-ripple-container').length
+
+          hud.textContent = [
+            `hud: on`,
+            `deterministic: ${vortexDebugMode ? 'on' : 'off'}`,
+            `slide: ${kind}`,
+            `ambient: ${isAmbient ? 'on' : 'off'}`,
+            `ambient-eligible: ${isAmbientEligible ? 'yes' : 'no'}`,
+            `ripples-allowed: ${canSpawnRipples ? 'yes' : 'no'}`,
+            `wave-loop: ${animationFrameId ? 'running' : 'stopped'}`,
+            `ripple-interval: ${rippleInterval ? 'running' : 'stopped'}`,
+            `pending-timeouts: ${rippleSpawnTimeouts.size}`,
+            `ripples: ${activeRipples} / containers: ${activeContainers}`,
+            `headings-in-slide: ${h}`,
+          ].join('\n')
+
+          hud.classList.remove('is-hidden')
+          hud.setAttribute('aria-hidden', 'false')
+        }
+
+        const syncDebugHudLifecycle = () => {
+          if (debugHudEnabled) {
+            ensureDebugHud()
+            updateDebugHud()
+            if (!debugHudInterval) {
+              debugHudInterval = setInterval(updateDebugHud, 250)
+            }
+          } else {
+            if (debugHudInterval) {
+              clearInterval(debugHudInterval)
+              debugHudInterval = null
+            }
+            document.querySelectorAll('.quantum-ripple-container.debug-visible').forEach((container) => {
+              container.classList.remove('debug-visible')
+            })
+            updateDebugHud()
+          }
+        }
 
         // Function to generate a single random ripple
         function spawnQuantumRipple(container) {
           const ripple = document.createElement('div')
           ripple.classList.add('quantum-ripple')
+          const isDebug = vortexDebugMode
+
+          if (isDebug) {
+            // Keep exactly one ripple visible for deterministic effect debugging.
+            container.querySelectorAll('.quantum-ripple').forEach((existing) => {
+              existing.remove()
+            })
+          }
 
           // Depth randomization toggles (OFF by default).
           // Flip any of these to `true` to experiment with the depth model.
@@ -2556,19 +2743,29 @@
           const ENABLE_DEPTH_OPACITY = false // Near = more visible at the peak
           const ENABLE_DEPTH_COLORS = false // Near = deeper/darker core + stronger highlights
 
-          // Randomize position across the slide
-          const x = Math.random() * 100
-          const y = Math.random() * 100
-          ripple.style.left = `${x}%`
-          ripple.style.top = `${y}%`
-
           // Ripple base size (pixels)
           const RIPPLE_SIZE_MIN_PX = 10 // minimum diameter
           const RIPPLE_SIZE_JITTER_PX = 20 // random additional range (0..this)
-          // Randomize the base size for a softer, larger vortex (min..min+jitter)
-          const baseSize = RIPPLE_SIZE_MIN_PX + Math.random() * RIPPLE_SIZE_JITTER_PX
+          // Randomize the base size for a softer, larger vortex (min..min+jitter).
+          // In debug mode keep the size fixed for deterministic effect checks.
+          const baseSize = isDebug
+            ? VORTEX_DEBUG_MIN_RADIUS_PX * 2
+            : RIPPLE_SIZE_MIN_PX + Math.random() * RIPPLE_SIZE_JITTER_PX
           ripple.style.width = `${baseSize}px`
           ripple.style.height = `${baseSize}px`
+
+          // Randomize position across the slide (or fix in debug mode).
+          // The ripple transform uses translate(-50%, -50%), so anchor by center point.
+          if (isDebug) {
+            const debugCenterPx = VORTEX_DEBUG_MARGIN_PX + baseSize / 2
+            ripple.style.left = `${debugCenterPx}px`
+            ripple.style.top = `${debugCenterPx}px`
+          } else {
+            const x = Math.random() * 100
+            const y = Math.random() * 100
+            ripple.style.left = `${x}%`
+            ripple.style.top = `${y}%`
+          }
 
           const enableDepth =
             ENABLE_DEPTH_SIZE ||
@@ -2624,9 +2821,16 @@
           const EXPAND_DURATION_JITTER_SECONDS = 3 // random additional range (0..this)
           const EXPAND_DURATION_MULTIPLIER = 1.0 // global slow-down multiplier
 
-          const expandDurationSeconds =
-            (EXPAND_DURATION_BASE_SECONDS + Math.random() * EXPAND_DURATION_JITTER_SECONDS) * EXPAND_DURATION_MULTIPLIER
+          const expandDurationSeconds = isDebug
+            ? VORTEX_DEBUG_DURATION_SECONDS
+            : (EXPAND_DURATION_BASE_SECONDS + Math.random() * EXPAND_DURATION_JITTER_SECONDS) *
+              EXPAND_DURATION_MULTIPLIER
           ripple.style.setProperty('--expand-duration', `${expandDurationSeconds}s`)
+          if (isDebug) {
+            ripple.style.setProperty('--expand-easing', 'linear')
+          } else {
+            ripple.style.removeProperty('--expand-easing')
+          }
 
           // Add it to the screen
           container.appendChild(ripple)
@@ -2668,52 +2872,91 @@
         }
 
         const updateQuantumRipples = (slide) => {
-          // Clear old ripples if we leave the slide
-          clearInterval(rippleInterval)
+          // Clear old schedules if we leave slide/state
+          clearQuantumRippleScheduling()
 
           if (!slide) {
             return
           }
 
-          const isTitle = slide === document.querySelector('.reveal .slides > section:first-child')
+          const isTitle = isTitleSlide(slide)
           const isChapter = slide.classList.contains('chapter')
           const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+          const canUseAmbient = isAmbient && isAmbientEligibleSlide(slide)
+          const forceDebugOnTextSlide = vortexDebugMode && isAmbientEligibleSlide(slide)
+          const generation = rippleGeneration
 
           // Stop completely if this slide should not have ripples
-          if (isTitle) return
-          if (!isChapter && !isAmbient) return
+          if (isTitle) {
+            updateDebugHud()
+            return
+          }
+          if (!isChapter && !canUseAmbient && !forceDebugOnTextSlide) {
+            updateDebugHud()
+            return
+          }
 
           const startRipples = () => {
+            if (generation !== rippleGeneration) return
+            if (Reveal.getCurrentSlide() !== slide) return
             const container = getRippleContainer(slide)
             if (!container) return
+            if (!isChapter) {
+              container.classList.toggle('debug-visible', forceDebugOnTextSlide)
+            }
 
             // Drop spawn rate controls
             const INITIAL_DROP_COUNT = 10 // how many drops appear shortly after entering a cover slide
             const INITIAL_DROP_SPREAD_MS = 1000 // spread those initial drops over 0..this window
             const DROP_INTERVAL_MS = 200 // steady-state rate: one drop per interval
+            const DEBUG_DROP_INTERVAL_MS = VORTEX_DEBUG_DURATION_SECONDS * 1000 + VORTEX_DEBUG_RESPAWN_GAP_MS
+
+            const initialDropCount = vortexDebugMode ? 1 : INITIAL_DROP_COUNT
+            const initialDropSpreadMs = vortexDebugMode ? 0 : INITIAL_DROP_SPREAD_MS
+            const dropIntervalMs = vortexDebugMode ? DEBUG_DROP_INTERVAL_MS : DROP_INTERVAL_MS
 
             // 1. Spawn a couple of ripples immediately so the screen isn't empty
-            for (let i = 0; i < INITIAL_DROP_COUNT; i++) {
-              setTimeout(() => spawnQuantumRipple(container), Math.random() * INITIAL_DROP_SPREAD_MS)
+            for (let i = 0; i < initialDropCount; i++) {
+              const delayMs = initialDropSpreadMs > 0 ? Math.random() * initialDropSpreadMs : 0
+              const timeoutId = setTimeout(() => {
+                rippleSpawnTimeouts.delete(timeoutId)
+                if (generation !== rippleGeneration) return
+                if (Reveal.getCurrentSlide() !== slide) return
+                spawnQuantumRipple(container)
+              }, delayMs)
+              rippleSpawnTimeouts.add(timeoutId)
             }
 
             // 2. Continuously spawn new ripples (e.g., one every 1.2 seconds)
-            rippleInterval = setInterval(() => {
+            const intervalId = setInterval(() => {
+              if (generation !== rippleGeneration) {
+                clearInterval(intervalId)
+                return
+              }
+              if (Reveal.getCurrentSlide() !== slide) return
               const liveContainer = getRippleContainer(slide)
               if (liveContainer) {
+                if (!isChapter) {
+                  liveContainer.classList.toggle('debug-visible', forceDebugOnTextSlide)
+                }
                 spawnQuantumRipple(liveContainer)
               }
-            }, DROP_INTERVAL_MS)
+            }, dropIntervalMs)
+            rippleInterval = intervalId
+            updateDebugHud()
           }
 
           // Delay to allow Reveal to finish background swaps during transitions
-          requestAnimationFrame(() => {
+          rippleStartFrameId = requestAnimationFrame(() => {
+            if (generation !== rippleGeneration) return
             startRipples()
-            setTimeout(() => {
+            rippleRestartTimeoutId = setTimeout(() => {
+              if (generation !== rippleGeneration) return
               if (!rippleInterval) {
                 startRipples()
               }
             }, 120)
+            updateDebugHud()
           })
         }
 
@@ -2721,6 +2964,7 @@
         Reveal.on('slidechanged', (event) => {
           updateCoherentLattice(event.currentSlide)
           updateQuantumRipples(event.currentSlide)
+          updateDebugHud()
         })
 
         // Listen for the custom ambient toggle event
@@ -2749,11 +2993,24 @@
 
           updateCoherentLattice(slide)
           updateQuantumRipples(slide)
+          updateDebugHud()
+        })
+
+        document.addEventListener('toggleVortexDebug', () => {
+          updateQuantumRipples(Reveal.getCurrentSlide())
+          updateDebugHud()
+        })
+
+        document.addEventListener('toggleDebugHud', () => {
+          syncDebugHudLifecycle()
+          updateDebugHud()
         })
 
         // Apply on initial load as well
+        syncDebugHudLifecycle()
         updateCoherentLattice(Reveal.getCurrentSlide())
         updateQuantumRipples(Reveal.getCurrentSlide())
+        updateDebugHud()
       })
     </script>
   </body>
