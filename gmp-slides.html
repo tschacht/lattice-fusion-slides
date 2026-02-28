@@ -451,6 +451,16 @@
           rippleWobbleEcho var(--wobble-echo-duration, 1s) ease-out infinite,
           ripplePrecession var(--precession-duration, 5.2s) ease-in-out infinite;
       }
+      /* Safari fallback: use direct transform keyframes instead of typed custom-property transform composition. */
+      .reveal.legacy-ripple-transform .quantum-ripple {
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        animation:
+          expandRippleLegacy var(--expand-duration, 8s) var(--expand-easing, cubic-bezier(0.2, 0.6, 0.2, 1)) forwards,
+          rippleWobbleFast var(--wobble-fast-duration, 0.1s) ease-in-out infinite,
+          rippleWobbleSlow var(--wobble-slow-duration, 0.6s) ease-in-out infinite,
+          rippleWobbleEcho var(--wobble-echo-duration, 1s) ease-out infinite,
+          ripplePrecession var(--precession-duration, 5.2s) ease-in-out infinite;
+      }
       .quantum-ripple::before,
       .quantum-ripple::after {
         content: '';
@@ -496,6 +506,32 @@
           --ripple-scale: 3.2;
           /* Swirl speed: total rotation amount (20% slower than before). */
           --ripple-rotation: 370deg;
+          opacity: var(--vortex-opacity-end, 0);
+        }
+      }
+      @keyframes expandRippleLegacy {
+        0% {
+          transform: translate(
+              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+            )
+            scale(0) rotate(0deg);
+          opacity: var(--vortex-opacity-start, 0);
+        }
+        12% {
+          transform: translate(
+              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+            )
+            scale(0.45) rotate(96deg);
+          opacity: var(--vortex-opacity-mid, 0.55);
+        }
+        100% {
+          transform: translate(
+              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+            )
+            scale(3.2) rotate(370deg);
           opacity: var(--vortex-opacity-end, 0);
         }
       }
@@ -2310,6 +2346,16 @@
       const VORTEX_DEBUG_DURATION_SECONDS = 5
       const VORTEX_DEBUG_RESPAWN_GAP_MS = 100
       const VORTEX_DEBUG_MIN_RADIUS_PX = 100
+      const isSafariLikely = (() => {
+        const ua = navigator.userAgent
+        return /Safari\//.test(ua) && !/(Chrome|CriOS|Chromium|Edg|OPR|FxiOS|Firefox)/.test(ua)
+      })()
+      if (isSafariLikely) {
+        const revealRoot = document.querySelector('.reveal')
+        if (revealRoot) {
+          revealRoot.classList.add('legacy-ripple-transform')
+        }
+      }
 
       const toggleAmbientMode = () => {
         ambientMode = !ambientMode
@@ -2713,11 +2759,16 @@
           }
 
           const currentSlide = Reveal.getCurrentSlide()
-          const isAmbient = document.querySelector('.reveal').classList.contains('effect-ambient')
+          const revealEl = document.querySelector('.reveal')
+          const isAmbient = Boolean(revealEl && revealEl.classList.contains('effect-ambient'))
           const isChapter = Boolean(currentSlide && currentSlide.classList.contains('chapter'))
           const isAmbientEligible = isAmbientEligibleSlide(currentSlide)
           const forceDebugOnTextSlide = Boolean(vortexDebugMode && currentSlide && !isChapter && isAmbientEligible)
           const canSpawnRipples = Boolean(isChapter || (isAmbient && isAmbientEligible) || forceDebugOnTextSlide)
+          const usingLegacyRipplePath = Boolean(revealEl && revealEl.classList.contains('legacy-ripple-transform'))
+          const cssRegisterPropertyAvailable = Boolean(
+            typeof CSS !== 'undefined' && typeof CSS.registerProperty === 'function'
+          )
           const kind = getSlideKind(currentSlide)
           const h = currentSlide ? currentSlide.querySelectorAll('h1, h2, h3').length : 0
           const activeRipples = document.querySelectorAll('.quantum-ripple').length
@@ -2736,6 +2787,8 @@
             `ambient: ${isAmbient ? 'on' : 'off'}`,
             `ambient-eligible: ${isAmbientEligible ? 'yes' : 'no'}`,
             `ripples-allowed: ${canSpawnRipples ? 'yes' : 'no'}`,
+            `ripple-path: ${usingLegacyRipplePath ? 'legacy' : 'modern'}`,
+            `css.registerProperty: ${cssRegisterPropertyAvailable ? 'yes' : 'no'}`,
             `wave-loop: ${animationFrameId ? 'running' : 'stopped'}`,
             `wave-elements: ${activeWaveElements.length ? activeWaveElements.join(', ') : '-'}`,
             `ripple-interval: ${rippleInterval ? 'running' : 'stopped'}`,
