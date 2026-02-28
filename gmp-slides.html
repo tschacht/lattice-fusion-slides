@@ -2192,12 +2192,13 @@
         <div
           class="shortcut-item"
           data-shortcut="debug"
+          data-scope="chapter"
           data-tooltip="press d to toggle deterministic vortex debug mode"
         >
           <span class="shortcut-key">d</span>
           <span class="shortcut-label">debug</span>
         </div>
-        <div class="shortcut-item" data-shortcut="hud" data-tooltip="press x to toggle debug HUD">
+        <div class="shortcut-item" data-shortcut="hud" data-scope="chapter" data-tooltip="press x to toggle debug HUD">
           <span class="shortcut-key">x</span>
           <span class="shortcut-label">hud</span>
         </div>
@@ -2951,8 +2952,8 @@
             }
 
             // Drop spawn rate controls
-            const INITIAL_DROP_COUNT = 10 // how many drops appear shortly after entering a cover slide
-            const INITIAL_DROP_SPREAD_MS = 1000 // spread those initial drops over 0..this window
+            const INITIAL_DROP_COUNT = 15 // how many drops appear shortly after entering a cover slide
+            const INITIAL_DROP_SPREAD_MS = 3000 // spread those initial drops over 0..this window
             const DROP_INTERVAL_MS = 200 // steady-state rate: one drop per interval
             const DEBUG_DROP_INTERVAL_MS = VORTEX_DEBUG_DURATION_SECONDS * 1000 + VORTEX_DEBUG_RESPAWN_GAP_MS
 
