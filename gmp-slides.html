@@ -2683,6 +2683,12 @@
           const h = currentSlide ? currentSlide.querySelectorAll('h1, h2, h3').length : 0
           const activeRipples = document.querySelectorAll('.quantum-ripple').length
           const activeContainers = document.querySelectorAll('.quantum-ripple-container').length
+          const activeWaveElements = Array.from(document.querySelectorAll('.coherent-lattice-active')).map((el) => {
+            if (el.classList.contains('slide-background')) return 'bg'
+            const tag = (el.tagName || '').toLowerCase()
+            if (tag) return tag
+            return 'node'
+          })
 
           hud.textContent = [
             `hud: on`,
@@ -2692,6 +2698,7 @@
             `ambient-eligible: ${isAmbientEligible ? 'yes' : 'no'}`,
             `ripples-allowed: ${canSpawnRipples ? 'yes' : 'no'}`,
             `wave-loop: ${animationFrameId ? 'running' : 'stopped'}`,
+            `wave-elements: ${activeWaveElements.length ? activeWaveElements.join(', ') : '-'}`,
             `ripple-interval: ${rippleInterval ? 'running' : 'stopped'}`,
             `pending-timeouts: ${rippleSpawnTimeouts.size}`,
             `ripples: ${activeRipples} / containers: ${activeContainers}`,
