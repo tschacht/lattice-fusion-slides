@@ -758,7 +758,7 @@
               <strong>The Trigger:</strong> They subject it to simple thermal cycles (heating up and cooling down).
             </li>
             <li class="fragment fade-in-then-semi-out">
-              <strong>The Observation:</strong> The system produces <strong>Deuterium (D)</strong>.
+              <strong>The Observation:</strong> The system produces <strong>Deuterium</strong> <span>\( (D) \)</span>.
             </li>
             <li class="fragment fade-in-then-semi-out">
               Why is this groundbreaking? It suggests the lattice is not a passive container, but an
@@ -837,35 +837,399 @@
           <p class="center-text">Nuclear, but (maybe) radiation-free</p>
         </section>
 
-        <!-- SLIDE: Step 1: The PEP Reaction -->
+        <!-- SLIDE: Phase 0 - The Setup -->
         <section>
-          <h2>Step 1: The Neutrino Exhaust Pipe</h2>
-          <p>
-            To create Deuterium without radiation, the system utilizes a rare three-body interaction known as the
-            <strong>PEP Reaction</strong>:
-          </p>
-          <p class="center-text highlight fragment fade-in"><span>\( p + e^- + p \rightarrow D + \nu_e \)</span></p>
+          <h2>
+            Phase 0: The Solid-State<br />
+            Pre-Processor
+          </h2>
+          <p>How the metal lattice prepares the physical environment for fusion:</p>
           <ul>
             <li class="fragment fade-in-then-semi-out">
-              <strong>The Catalyst:</strong> The dense electron cloud of the titanium lattice perfectly screens
-              (reduces) the <strong>Coulomb barrier</strong> (the natural repulsion between protons).
+              <strong>The Fuel (Protons):</strong> Hydrogen (<span>\( p^+ + e^- \)</span>) gas is absorbed into the
+              Titanium. The atoms split, locking <strong>bare protons</strong> inside the crystal's microscopic
+              <strong>gaps</strong>.
             </li>
             <li class="fragment fade-in-then-semi-out">
-              <strong>Momentum Conservation:</strong> The reaction generates <span>\( 1.44 \text{ MeV} \)</span>.
-              Because the output is a heavy Deuteron (<span>\( D \)</span>) and a nearly massless electron neutrino
-              (<span>\( \nu_e \)</span>), physics dictates the lightest particle takes the energy.
+              <strong>The Environment (Electrons):</strong> Titanium's metallic "<em>conduction band</em>" (outermost
+              electron shells overlap) provides a massive, shared pool of highly mobile,<br />
+              <strong>free-floating electrons</strong> (like a fluid).
             </li>
             <li class="fragment fade-in-then-semi-out">
-              <strong>The Result:</strong> The <strong>neutrino</strong> carries away ~99.9% of the energy at near
-              light-speed. Because neutrinos barely interact with normal matter, the energy
-              <strong>safely</strong> exits the Earth entirely.
+              <strong>Charge Encapsulation (Coulomb suppression)</strong>: The dense electron cloud encapsulates the
+              trapped protons, <strong>nullifying</strong> their positive <strong>repulsion</strong> so they can
+              physically interface/touch.
+            </li>
+            <li class="fragment fade-in-then-semi-out">
+              <strong>The Trigger (Thermal Cycles):</strong> Heating and cooling causes sudden structural phase
+              transitions. The violently shifting lattice briefly <strong>clusters</strong> protons and electrons into
+              <strong>ultra-dense</strong> micro-environments, triggering fusion.
             </li>
           </ul>
         </section>
 
-        <!-- SLIDE: The Core Engine -->
+        <!-- SLIDE: Phase 1: The PEP Reaction -->
+        <section>
+          <h2>Phase 1: The Neutrino Offload Sink</h2>
+          <p>
+            To create Deuterium (<span>\( p^+n^0 + e^- \)</span>) without radiation, the system utilizes<br />
+            "<em>Electron Capture</em>" in a three-body interaction known as the <strong>PEP Reaction</strong>:
+          </p>
+          <p class="center-text highlight fragment fade-in"><span>\( p + e^- + p \rightarrow D + \nu_e \)</span></p>
+          <ul>
+            <li class="fragment fade-in-then-semi-out">
+              <strong>The Atomic Transaction:</strong> Turning a proton into a neutron <strong>costs</strong> energy,
+              forming a nucleus releases <strong>energy</strong>. The system resolves this by executing both
+              <strong>simultaneously</strong> as one quantum <strong>transaction</strong>.
+            </li>
+            <li class="fragment fade-in-then-semi-out">
+              <strong>The Execution:</strong> <strong>Proton A</strong> absorbs one electron (goes neutron) and
+              instantly binds with <strong>Proton B</strong>. The output is a
+              <strong>Deuteron nucleus (<span>\( D \)</span>)</strong> and a tiny
+              <strong>neutrino (<span>\( \nu_e \)</span>)</strong>.
+            </li>
+            <li class="fragment fade-in-then-semi-out">
+              <strong>The Sink:</strong> This transaction yields a <span>\( 1.44 \text{ MeV} \)</span> energy gain.
+              Because the Deuteron is heavy and slow, the rules of momentum dictate the nearly massless neutrino takes
+              ~99.9% of the energy.
+            </li>
+            <li class="fragment fade-in-then-semi-out">
+              <strong>The Result:</strong> The neutrino <strong>safely</strong> exits Earth at near light-speed,
+              removing the massive energy spike without triggering lethal radiation.
+            </li>
+          </ul>
+        </section>
+
+        <!-- VISUAL SLIDE: The PEP Reaction (Phase 1) -->
+        <section>
+          <h2>Visualizing the PEP Reaction</h2>
+          <svg class="r-stretch" viewBox="0 0 1000 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Quantum Glows -->
+              <filter id="glow-proton" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <filter id="glow-electron" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <filter id="glow-neutrino" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <!-- Energy Flash -->
+              <radialGradient id="flashGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fff" stop-opacity="1" />
+                <stop offset="40%" stop-color="#b026ff" stop-opacity="0.8" />
+                <stop offset="100%" stop-color="#111c29" stop-opacity="0" />
+              </radialGradient>
+
+              <!-- Arrow Markers -->
+              <marker
+                id="arrow-cyan"
+                viewBox="0 0 10 10"
+                refX="5"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#00e5ff" />
+              </marker>
+              <marker
+                id="arrow-red"
+                viewBox="0 0 10 10"
+                refX="5"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff4444" />
+              </marker>
+            </defs>
+
+            <g transform="translate(50, 40)">
+              <rect width="900" height="360" rx="10" fill="#111c29" stroke="#555" stroke-width="2" />
+
+              <!-- Pipeline Dividers -->
+              <line x1="300" y1="0" x2="300" y2="360" stroke="#333" stroke-width="2" stroke-dasharray="6" />
+              <line x1="600" y1="0" x2="600" y2="360" stroke="#333" stroke-width="2" stroke-dasharray="6" />
+
+              <!-- STEP 1: INPUT / ENCAPSULATION -->
+              <text
+                x="150"
+                y="40"
+                fill="#aaa"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="1"
+              >
+                1. CHARGE ENCAPSULATION
+              </text>
+
+              <!-- The Encapsulation Shell (The proxy bounding box) -->
+              <rect
+                x="100"
+                y="70"
+                width="100"
+                height="220"
+                rx="50"
+                fill="none"
+                stroke="#00e5ff"
+                stroke-width="3"
+                stroke-dasharray="6,4"
+                filter="url(#glow-electron)"
+              />
+              <text
+                x="150"
+                y="60"
+                fill="#00e5ff"
+                font-family="sans-serif"
+                font-size="12"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Neutralized Domain
+              </text>
+
+              <!-- Dense e- cloud in the center -->
+              <circle cx="150" cy="180" r="35" fill="#00e5ff" opacity="0.2" filter="url(#glow-electron)" />
+              <circle cx="150" cy="180" r="10" fill="#00e5ff" opacity="0.8" filter="url(#glow-electron)" />
+              <text
+                x="150"
+                y="184"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                e⁻
+              </text>
+
+              <!-- Top Proton -->
+              <circle cx="150" cy="115" r="16" fill="#ff4444" filter="url(#glow-proton)" />
+              <text
+                x="150"
+                y="120"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                p⁺
+              </text>
+
+              <!-- Bottom Proton -->
+              <circle cx="150" cy="245" r="16" fill="#ff4444" filter="url(#glow-proton)" />
+              <text
+                x="150"
+                y="250"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                p⁺
+              </text>
+
+              <!-- Repulsion Blocked (Red lines hitting the shell and failing) -->
+              <path
+                d="M 150 90 L 150 75"
+                fill="none"
+                stroke="#ff4444"
+                stroke-width="3"
+                opacity="0.6"
+                marker-end="url(#arrow-red)"
+              />
+              <line x1="140" y1="75" x2="160" y2="75" stroke="#ff4444" stroke-width="3" opacity="0.8" />
+              <!-- Blocked symbol -->
+
+              <path
+                d="M 150 270 L 150 285"
+                fill="none"
+                stroke="#ff4444"
+                stroke-width="3"
+                opacity="0.6"
+                marker-end="url(#arrow-red)"
+              />
+              <line x1="140" y1="285" x2="160" y2="285" stroke="#ff4444" stroke-width="3" opacity="0.8" />
+              <!-- Blocked symbol -->
+
+              <!-- Encapsulation Pull (Cyan arrows showing the barrier is bypassed) -->
+              <path
+                d="M 100 135 Q 110 150 135 160"
+                fill="none"
+                stroke="#00e5ff"
+                stroke-width="2"
+                marker-end="url(#arrow-cyan)"
+              />
+              <path
+                d="M 100 225 Q 110 210 135 200"
+                fill="none"
+                stroke="#00e5ff"
+                stroke-width="2"
+                marker-end="url(#arrow-cyan)"
+              />
+
+              <text x="150" y="310" fill="#fff" font-family="sans-serif" font-size="14" text-anchor="middle">
+                Electron pool suppreses
+              </text>
+              <text x="150" y="325" fill="#fff" font-family="sans-serif" font-size="14" text-anchor="middle">
+                the Coulomb barrier
+              </text>
+
+              <!-- STEP 2: PROCESSING / THE WEAK INTERACTION -->
+              <text
+                x="450"
+                y="40"
+                fill="#aaa"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="1"
+              >
+                2. ELECTRON CAPTURE & FUSION-TX
+              </text>
+
+              <!-- The Flash -->
+              <circle cx="450" cy="180" r="70" fill="url(#flashGradient)" />
+
+              <!-- Merging Particles -->
+              <circle cx="435" cy="180" r="16" fill="#ff4444" filter="url(#glow-proton)" />
+              <!-- p+ -->
+              <circle cx="465" cy="180" r="16" fill="#00e5ff" filter="url(#glow-electron)" />
+              <!-- e- -->
+              <circle cx="450" cy="150" r="16" fill="#ff4444" filter="url(#glow-proton)" />
+              <!-- p+ -->
+
+              <text
+                x="450"
+                y="310"
+                fill="#b026ff"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Proton A absorbs electron,
+              </text>
+              <text
+                x="450"
+                y="325"
+                fill="#b026ff"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                converts to Neutron, binds Proton B.
+              </text>
+
+              <!-- STEP 3: OUTPUT / THE SINK -->
+              <text
+                x="750"
+                y="40"
+                fill="#aaa"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="1"
+              >
+                3. SAFE OUTPUT
+              </text>
+
+              <!-- Deuteron Nucleus (Proton + Neutron) -->
+              <circle cx="680" cy="180" r="20" fill="#ff4444" filter="url(#glow-proton)" />
+              <text
+                x="680"
+                y="185"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                p⁺
+              </text>
+              <circle cx="715" cy="180" r="20" fill="#888" filter="url(#glow-proton)" />
+              <text
+                x="715"
+                y="185"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                n⁰
+              </text>
+
+              <!-- Deuterium Label -->
+              <text
+                x="697"
+                y="225"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Deuteron (D)
+              </text>
+
+              <!-- Neutrino Ray Shooting off -->
+              <path
+                d="M 740 180 Q 750 165 760 180 T 780 180 T 800 180 T 820 180 T 840 180 T 860 180"
+                fill="none"
+                stroke="#00ffcc"
+                stroke-width="3"
+                filter="url(#glow-neutrino)"
+              />
+              <!-- Arrowhead for Neutrino -->
+              <polygon points="858,172 875,180 858,188" fill="#00ffcc" filter="url(#glow-neutrino)" />
+
+              <text
+                x="800"
+                y="160"
+                fill="#00ffcc"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Neutrino (νe)
+              </text>
+
+              <text
+                x="750"
+                y="310"
+                fill="#00ffcc"
+                font-family="sans-serif"
+                font-size="14"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Carries ~99.9% of the 1.44 MeV
+              </text>
+              <text x="750" y="325" fill="#fff" font-family="sans-serif" font-size="14" text-anchor="middle">
+                safely out of the crystal at light-speed.
+              </text>
+            </g>
+          </svg>
+        </section>
+
+        <!-- SLIDE: Phase 2: The 24 MeV Problem -->
         <section class="has-footnote">
-          <h2>Step 2: The 24 MeV Problem</h2>
+          <h2>Phase 2: The 24 MeV Problem</h2>
           <h3>(Theory)</h3>
           <p>Creating Deuterium is safe, but as it accumulates, the <strong>Deuterons fuse</strong> together:</p>
           <p class="center-text highlight fragment fade-in">
@@ -921,6 +1285,196 @@
             </li>
           </ul>
           <p class="footnote">R. H. Dicke, "Coherence in Spontaneous Radiation Processes" (1954)</p>
+        </section>
+
+        <!-- VISUAL SLIDE: Superradiance -->
+        <section>
+          <h2>Visualizing Superradiance</h2>
+          <svg class="r-stretch" viewBox="0 0 1000 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- Quantum Glow Filter -->
+              <filter id="glow-strong" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <filter id="glow-subtle" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <!-- LEFT PANEL: ASYNCHRONOUS -->
+            <g transform="translate(50, 50)">
+              <rect width="400" height="350" rx="10" fill="#15151a" stroke="#444" stroke-width="2" />
+              <text
+                x="200"
+                y="40"
+                fill="#ff4444"
+                font-family="sans-serif"
+                font-size="20"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="1"
+              >
+                ASYNCHRONOUS (Standard)
+              </text>
+              <text x="200" y="65" fill="#aaa" font-family="sans-serif" font-size="16" text-anchor="middle">
+                Linear Scaling: Capacity ∝ N
+              </text>
+
+              <!-- Chaotic, localized energy spikes -->
+              <path
+                d="M 80 180 Q 120 120 150 160 T 200 130"
+                fill="none"
+                stroke="#ff4444"
+                stroke-width="3"
+                filter="url(#glow-strong)"
+                opacity="0.8"
+              />
+              <path
+                d="M 220 250 Q 260 300 300 240 T 350 280"
+                fill="none"
+                stroke="#ff4444"
+                stroke-width="3"
+                filter="url(#glow-strong)"
+                opacity="0.8"
+              />
+              <path
+                d="M 280 130 L 330 180 L 250 160"
+                fill="none"
+                stroke="#ff4444"
+                stroke-width="3"
+                filter="url(#glow-strong)"
+                opacity="0.8"
+              />
+
+              <!-- Randomly scattered atoms -->
+              <circle cx="80" cy="180" r="8" fill="#555" />
+              <circle cx="150" cy="160" r="10" fill="#ff4444" filter="url(#glow-strong)" />
+              <!-- Hot node -->
+              <circle cx="200" cy="130" r="8" fill="#555" />
+              <circle cx="100" cy="280" r="8" fill="#555" />
+              <circle cx="220" cy="250" r="10" fill="#ff4444" filter="url(#glow-strong)" />
+              <!-- Hot node -->
+              <circle cx="300" cy="240" r="8" fill="#555" />
+              <circle cx="350" cy="280" r="10" fill="#ff4444" filter="url(#glow-strong)" />
+              <!-- Hot node -->
+              <circle cx="280" cy="130" r="8" fill="#555" />
+              <circle cx="250" cy="180" r="8" fill="#555" />
+
+              <text x="200" y="320" fill="#ff4444" font-family="sans-serif" font-size="14" text-anchor="middle">
+                Local nodes overload and rupture
+              </text>
+
+              <!-- Legend -->
+              <g transform="translate(15, 360)">
+                <circle cx="0" cy="0" r="5" fill="#555" />
+                <text x="10" y="4" fill="#aaa" font-family="sans-serif" font-size="12">Node</text>
+
+                <circle cx="65" cy="0" r="5" fill="#ff4444" filter="url(#glow-strong)" />
+                <text x="75" y="4" fill="#aaa" font-family="sans-serif" font-size="12">Overload</text>
+
+                <path d="M 145 0 L 165 0" stroke="#ff4444" stroke-width="3" filter="url(#glow-strong)" />
+
+                <path
+                  d="M 0 25 Q 10 17 20 25 T 40 25"
+                  fill="none"
+                  stroke="#ff4444"
+                  stroke-width="2"
+                  filter="url(#glow-strong)"
+                />
+                <text x="50" y="25" fill="#aaa" font-family="sans-serif" font-size="12">Propagating Photons</text>
+                <text x="50" y="39" fill="#aaa" font-family="sans-serif" font-size="12">
+                  with radiative Dissipation (Energy Transfer)
+                </text>
+              </g>
+            </g>
+
+            <!-- RIGHT PANEL: SYNCHRONOUS -->
+            <g transform="translate(550, 50)">
+              <rect width="400" height="350" rx="10" fill="#0d1b2a" stroke="#00e5ff" stroke-width="2" />
+              <text
+                x="200"
+                y="40"
+                fill="#00e5ff"
+                font-family="sans-serif"
+                font-size="20"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="1"
+              >
+                SYNCHRONOUS (Coherent)
+              </text>
+              <text x="200" y="65" fill="#aaa" font-family="sans-serif" font-size="16" text-anchor="middle">
+                Exponential Scaling: Capacity ∝ N²
+              </text>
+
+              <!-- Lattice Lines -->
+              <g stroke="#00e5ff" stroke-width="1" opacity="0.2">
+                <line x1="80" y1="140" x2="320" y2="140" />
+                <line x1="80" y1="200" x2="320" y2="200" />
+                <line x1="80" y1="260" x2="320" y2="260" />
+                <line x1="80" y1="140" x2="80" y2="260" />
+                <line x1="140" y1="140" x2="140" y2="260" />
+                <line x1="200" y1="140" x2="200" y2="260" />
+                <line x1="260" y1="140" x2="260" y2="260" />
+                <line x1="320" y1="140" x2="320" y2="260" />
+              </g>
+
+              <!-- Macroscopic Standing Wave -->
+              <path
+                d="M 40 200 Q 120 100 200 200 T 360 200"
+                fill="none"
+                stroke="#00e5ff"
+                stroke-width="6"
+                filter="url(#glow-strong)"
+                opacity="0.9"
+              />
+
+              <!-- Ordered Grid Atoms -->
+              <g fill="#00e5ff" filter="url(#glow-subtle)">
+                <circle cx="80" cy="140" r="6" />
+                <circle cx="140" cy="140" r="6" />
+                <circle cx="200" cy="140" r="6" />
+                <circle cx="260" cy="140" r="6" />
+                <circle cx="320" cy="140" r="6" />
+                <circle cx="80" cy="200" r="6" />
+                <circle cx="140" cy="200" r="6" />
+                <circle cx="200" cy="200" r="6" />
+                <circle cx="260" cy="200" r="6" />
+                <circle cx="320" cy="200" r="6" />
+                <circle cx="80" cy="260" r="6" />
+                <circle cx="140" cy="260" r="6" />
+                <circle cx="200" cy="260" r="6" />
+                <circle cx="260" cy="260" r="6" />
+                <circle cx="320" cy="260" r="6" />
+              </g>
+
+              <text x="200" y="320" fill="#00e5ff" font-family="sans-serif" font-size="14" text-anchor="middle">
+                Nodes merge into a unified "Macro-Atom"
+              </text>
+
+              <!-- Legend -->
+              <g transform="translate(15, 360)">
+                <circle cx="0" cy="0" r="5" fill="#00e5ff" filter="url(#glow-subtle)" />
+                <text x="10" y="4" fill="#aaa" font-family="sans-serif" font-size="12">Coherent Node</text>
+
+                <path
+                  d="M 0 25 Q 10 17 20 25 T 40 25"
+                  fill="none"
+                  stroke="#00e5ff"
+                  stroke-width="3"
+                  filter="url(#glow-strong)"
+                />
+                <text x="50" y="25" fill="#aaa" font-family="sans-serif" font-size="12">
+                  Macroscopic Standing Wave in (A)
+                </text>
+                <text x="50" y="39" fill="#aaa" font-family="sans-serif" font-size="12">
+                  with thermal Dissipation (Energy Transfer)
+                </text>
+              </g>
+            </g>
+          </svg>
         </section>
 
         <!-- CHAPTER: Potentials -->
@@ -1030,6 +1584,161 @@
           </ul>
         </section>
 
+        <!-- VISUAL SLIDE: Vector Potential Buffering -->
+        <section>
+          <h2>The <span>\( \mathbf{A} \)</span>-Field in Action</h2>
+          <svg class="r-stretch" viewBox="0 0 1000 450" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="glow-massive" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="12" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <filter id="glow-wave" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="5" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+              <!-- Gradient showing energy shifting from cold lattice to hot buffered energy -->
+              <linearGradient id="heatGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00e5ff" />
+                <stop offset="30%" stop-color="#b026ff" />
+                <stop offset="50%" stop-color="#ff267e" />
+                <stop offset="70%" stop-color="#b026ff" />
+                <stop offset="100%" stop-color="#00e5ff" />
+              </linearGradient>
+            </defs>
+
+            <g transform="translate(100, 40)">
+              <rect width="800" height="360" rx="10" fill="#111c29" stroke="#555" stroke-width="2" />
+
+              <!-- Lattice lines (distorted near the center) -->
+              <g stroke="#00e5ff" stroke-width="2" opacity="0.3">
+                <!-- Horizontals -->
+                <line x1="100" y1="120" x2="700" y2="120" />
+                <path d="M 100 180 Q 400 160 700 180" fill="none" />
+                <path d="M 100 240 Q 400 260 700 240" fill="none" />
+                <line x1="100" y1="300" x2="700" y2="300" />
+
+                <!-- Verticals -->
+                <line x1="150" y1="80" x2="150" y2="320" />
+                <line x1="250" y1="80" x2="250" y2="320" />
+                <path d="M 350 80 Q 330 200 350 320" fill="none" />
+                <path d="M 450 80 Q 470 200 450 320" fill="none" />
+                <line x1="550" y1="80" x2="550" y2="320" />
+                <line x1="650" y1="80" x2="650" y2="320" />
+              </g>
+
+              <!-- The Global Buffer Wave (A-Field) absorbing the shock -->
+              <path
+                d="M 50 200 Q 200 50 400 200 T 750 200"
+                fill="none"
+                stroke="url(#heatGradient)"
+                stroke-width="15"
+                filter="url(#glow-wave)"
+                opacity="0.8"
+              />
+              <path
+                d="M 50 200 Q 200 50 400 200 T 750 200"
+                fill="none"
+                stroke="#fff"
+                stroke-width="4"
+                filter="url(#glow-wave)"
+                opacity="0.9"
+              />
+
+              <!-- Lattice Nodes -->
+              <g fill="#00e5ff" filter="url(#glow-wave)">
+                <!-- Cool Outer Nodes -->
+                <circle cx="150" cy="120" r="6" />
+                <circle cx="250" cy="120" r="6" />
+                <circle cx="550" cy="120" r="6" />
+                <circle cx="650" cy="120" r="6" />
+                <circle cx="150" cy="176.9" r="6" />
+                <circle cx="250" cy="172.5" r="6" />
+                <circle cx="550" cy="172.5" r="6" />
+                <circle cx="650" cy="176.9" r="6" />
+                <circle cx="150" cy="243.1" r="6" />
+                <circle cx="250" cy="247.5" r="6" />
+                <circle cx="550" cy="247.5" r="6" />
+                <circle cx="650" cy="243.1" r="6" />
+                <circle cx="150" cy="300" r="6" />
+                <circle cx="250" cy="300" r="6" />
+                <circle cx="550" cy="300" r="6" />
+                <circle cx="650" cy="300" r="6" />
+              </g>
+
+              <!-- Warmed inner nodes distributing the heat -->
+              <g fill="#b026ff" filter="url(#glow-wave)">
+                <circle cx="344.4" cy="120" r="7" />
+                <circle cx="455.6" cy="120" r="7" />
+                <circle cx="340.6" cy="170.4" r="8" />
+                <circle cx="459.4" cy="170.4" r="8" />
+                <circle cx="341.7" cy="249.6" r="8" />
+                <circle cx="458.3" cy="249.6" r="8" />
+                <circle cx="346.9" cy="300" r="7" />
+                <circle cx="453.1" cy="300" r="7" />
+              </g>
+
+              <!-- THE FUSION EVENT IN THE CENTER -->
+              <circle cx="400" cy="200" r="15" fill="#fff" filter="url(#glow-massive)" />
+              <circle cx="400" cy="200" r="8" fill="#ff267e" />
+
+              <!-- Annotation Lines and Labels -->
+              <!-- Pointing to fusion -->
+              <line x1="400" y1="180" x2="400" y2="70" stroke="#fff" stroke-width="2" stroke-dasharray="4" />
+              <text
+                x="400"
+                y="55"
+                fill="#fff"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                D + D FUSION (24 MeV)
+              </text>
+
+              <!-- Pointing to the Buffer Wave -->
+              <line x1="580" y1="260" x2="680" y2="315" stroke="#fff" stroke-width="2" stroke-dasharray="4" />
+              <text
+                x="680"
+                y="335"
+                fill="#ff267e"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+              >
+                Energy instantly uploaded
+              </text>
+              <text x="680" y="350" fill="#ff267e" font-family="sans-serif" font-size="14" text-anchor="middle">
+                to the Vector Potential (A)
+              </text>
+
+              <text
+                x="360"
+                y="345"
+                fill="#00e5ff"
+                font-family="sans-serif"
+                font-size="16"
+                font-weight="bold"
+                text-anchor="middle"
+                letter-spacing="1"
+              >
+                GAMMA RAY COMPLETELY SUPPRESSED
+              </text>
+
+              <!-- Legend (Top Left) -->
+              <g transform="translate(20, 20)">
+                <line x1="0" y1="0" x2="20" y2="0" stroke="#00e5ff" stroke-width="2" opacity="0.4" />
+                <line x1="10" y1="-10" x2="10" y2="10" stroke="#00e5ff" stroke-width="2" opacity="0.4" />
+                <text x="25" y="4" fill="#aaa" font-family="sans-serif" font-size="12">
+                  Electromagnetic Binding Forces
+                </text>
+              </g>
+            </g>
+          </svg>
+        </section>
+
         <!-- SLIDE: Scalar Fields & Safety -->
         <section class="has-footnote">
           <h2>
@@ -1040,15 +1749,16 @@
           <ul>
             <li class="fragment fade-in-then-semi-out">
               Standard electromagnetic waves (like radio or light) are "transverse" and cause rapid
-              <strong>dissipation</strong>.
+              <strong>dissipation</strong> (destructive).
             </li>
             <li class="fragment fade-in-then-semi-out">
               Modanese proves mathematically that transient nuclear currents inside a coherent lattice generate
-              <strong>Scalar (or Longitudinal) Electromagnetic Fields</strong>.
+              <strong>scalar (or longitudinal) electromagnetic fields</strong>.
             </li>
             <li class="fragment fade-in-then-semi-out">
-              Scalar fields have a unique property: they <em>cannot</em> radiate away into free space. There is
-              <strong>no dissipation</strong>.
+              Scalar fields have a unique property: they <em>cannot</em> radiate away into free space. It acts like a
+              <strong>perfect</strong>, <strong>lossless superconductor</strong> (<em>quantum capacitor</em>) for the
+              energy.
             </li>
             <li class="fragment fade-in-then-semi-out">
               The energy is <strong>safely trapped</strong>, "sloshing" back and forth inside the medium without
@@ -1410,6 +2120,7 @@
           data-scope="chapter"
           data-tooltip="press 3 to toggle micro wobble"
         >
+          <!-- !!TODO: is this working after perf opt? -->
           <span class="shortcut-key">3</span>
           <span class="shortcut-label">micro wobble</span>
         </div>
