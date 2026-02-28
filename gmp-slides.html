@@ -292,6 +292,16 @@
         inherits: true;
         initial-value: 0;
       }
+      @property --ripple-scale {
+        syntax: '<number>';
+        inherits: true;
+        initial-value: 0;
+      }
+      @property --ripple-rotation {
+        syntax: '<angle>';
+        inherits: true;
+        initial-value: 0deg;
+      }
       .reveal {
         --shimmer-strength: 0;
         --speckle-strength: 0;
@@ -299,6 +309,7 @@
         --wobble-jitter: 0px;
         --wobble-contrast-amount: 0;
         --wobble-strength: 0;
+        --wobble-filter-strength: 0;
         --precession-amount: 0deg;
         --wobble-fast-duration: 0.1s;
         --wobble-slow-duration: 0.6s;
@@ -311,16 +322,19 @@
         --shimmer-strength: 0.85;
       }
       .reveal.effect-speckle {
-        --speckle-strength: 0.45;
+        --speckle-strength: 0.55;
       }
       .reveal.effect-wobble {
         --wobble-amount: 2.1px;
-        --wobble-jitter: 1.32px;
+        --wobble-jitter: 2px;
         --wobble-contrast-amount: 0.31;
-        --wobble-strength: 1;
+        --wobble-strength: 1.2;
         --wobble-fast-duration: 0.1s;
-        --wobble-slow-duration: 0.6s;
-        --wobble-echo-duration: 1s;
+        --wobble-slow-duration: 0.4s;
+        --wobble-echo-duration: 0.6s;
+      }
+      .reveal.effect-wobble-filter {
+        --wobble-filter-strength: 1.1;
       }
       .reveal.effect-precession {
         /* Rock amplitude (30% less than 72deg). */
@@ -385,8 +399,28 @@
         box-shadow:
           inset 0 0 18px rgba(0, 0, 0, 0.28),
           0 0 14px rgba(255, 255, 255, 0.08);
-        /* Static filter: Animating CSS filters per-pixel on many elements destroys framerates */
-        filter: blur(var(--vortex-blur, 1.3px)) saturate(1.25) contrast(var(--vortex-contrast, 1.12));
+        filter: blur(
+            calc(
+              var(--vortex-blur, 1.3px) + (var(--wobble-blur-fast, 0px) + var(--wobble-blur-slow, 0px)) *
+                var(--wobble-filter-strength, 0)
+            )
+          )
+          saturate(1.25)
+          contrast(
+            calc(
+              var(--vortex-contrast, 1.12) + (var(--wobble-contrast-fast, 0) + var(--wobble-contrast-slow, 0)) *
+                var(--wobble-filter-strength, 0)
+            )
+          )
+          brightness(
+            calc(
+              1 +
+                (
+                  (var(--wobble-contrast-fast, 0) + var(--wobble-contrast-slow, 0)) * var(--wobble-filter-strength, 0) *
+                    0.6
+                )
+            )
+          );
         -webkit-mask: radial-gradient(
           circle,
           rgba(0, 0, 0, 0) 28%,
@@ -403,7 +437,11 @@
           rgba(0, 0, 0, 0.6) 70%,
           rgba(0, 0, 0, 0) 84%
         );
-        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        transform: translate(
+            calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
+            calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
+          )
+          scale(var(--ripple-scale, 0)) rotate(var(--ripple-rotation, 0deg));
         opacity: 0;
         /* Slower, smoother expansion */
         animation:
@@ -444,29 +482,20 @@
 
       @keyframes expandRipple {
         0% {
-          transform: translate(
-              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
-              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
-            )
-            scale(0) rotate(0deg);
+          --ripple-scale: 0;
+          --ripple-rotation: 0deg;
           opacity: var(--vortex-opacity-start, 0);
         }
         12% {
-          /* Swirl speed: reduce rotation to slow the vortex spin */
-          transform: translate(
-              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
-              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
-            )
-            scale(0.45) rotate(96deg);
+          --ripple-scale: 0.45;
+          /* Swirl speed: reduce rotation to slow the vortex spin. */
+          --ripple-rotation: 96deg;
           opacity: var(--vortex-opacity-mid, 0.55);
         }
         100% {
-          /* Swirl speed: total rotation amount (20% slower than before) */
-          transform: translate(
-              calc(-50% + var(--wobble-x-fast, 0px) + var(--wobble-x-slow, 0px)),
-              calc(-50% + var(--wobble-y-fast, 0px) + var(--wobble-y-slow, 0px))
-            )
-            scale(3.2) rotate(370deg);
+          --ripple-scale: 3.2;
+          /* Swirl speed: total rotation amount (20% slower than before). */
+          --ripple-rotation: 370deg;
           opacity: var(--vortex-opacity-end, 0);
         }
       }
@@ -2137,24 +2166,29 @@
           <span class="shortcut-key">2</span>
           <span class="shortcut-label">interference speckle</span>
         </div>
+        <div class="shortcut-item" data-shortcut="wobble" data-scope="chapter" data-tooltip="press 3 to toggle wobble">
+          <span class="shortcut-key">3</span>
+          <span class="shortcut-label">wobble</span>
+        </div>
         <div
           class="shortcut-item"
-          data-shortcut="wobble"
+          data-shortcut="wobble-filter"
           data-scope="chapter"
-          data-tooltip="press 3 to toggle micro wobble"
+          data-tooltip="press 4 to toggle wobble blur/contrast filter path"
         >
-          <span class="shortcut-key">3</span>
-          <span class="shortcut-label">micro wobble</span>
+          <span class="shortcut-key">4</span>
+          <span class="shortcut-label">wobble filter</span>
         </div>
         <div
           class="shortcut-item"
           data-shortcut="precession"
           data-scope="chapter"
-          data-tooltip="press 4 to toggle vortex precession"
+          data-tooltip="press 5 to toggle vortex precession"
         >
-          <span class="shortcut-key">4</span>
+          <span class="shortcut-key">5</span>
           <span class="shortcut-label">vortex precession</span>
         </div>
+
         <div
           class="shortcut-item"
           data-shortcut="debug"
@@ -2231,7 +2265,8 @@
           49: () => toggleQuantumEffect('shimmer'), // 1
           50: () => toggleQuantumEffect('speckle'), // 2
           51: () => toggleQuantumEffect('wobble'), // 3
-          52: () => toggleQuantumEffect('precession'), // 4
+          52: () => toggleQuantumEffect('wobbleFilter'), // 4
+          53: () => toggleQuantumEffect('precession'), // 5
           69: () => toggleQuantumLegend(), // e
         },
         fragments: false,
@@ -2303,6 +2338,7 @@
         shimmer: true,
         speckle: false,
         wobble: true,
+        wobbleFilter: true,
         precession: true,
       }
 
@@ -2313,6 +2349,7 @@
         revealEl.classList.toggle('effect-speckle', quantumEffects.speckle)
         revealEl.classList.toggle('effect-wobble', quantumEffects.wobble)
         revealEl.classList.toggle('effect-precession', quantumEffects.precession)
+        revealEl.classList.toggle('effect-wobble-filter', quantumEffects.wobbleFilter)
       }
 
       const toggleQuantumEffect = (effectKey) => {
@@ -2334,6 +2371,7 @@
           speckle: document.querySelector('.shortcut-item[data-shortcut="speckle"]'),
           wobble: document.querySelector('.shortcut-item[data-shortcut="wobble"]'),
           precession: document.querySelector('.shortcut-item[data-shortcut="precession"]'),
+          wobbleFilter: document.querySelector('.shortcut-item[data-shortcut="wobble-filter"]'),
         }
 
         Object.entries(effectItems).forEach(([key, item]) => {
